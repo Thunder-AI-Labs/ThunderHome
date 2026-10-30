@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Yotes by Thunder AI Labs</title>
+<meta name="description" content="Yotes: notes, reminders and Spaces you can talk to, in English or Tamil. Free on the App Store.">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&family=Noto+Sans+Tamil:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Yotes in its own Tide theme: deep teal night, aqua glow, teal actions.
+   Each pinned scene is built from the app's own pieces (orb, reminder card, Ask bar, tiles), animated by scroll. */
+:root{
+  --u:1vmin;
+  --night:#071015; --ink-2:#0c1a20; --fg:#eef6f7; --muted:#8fa6ab; --line:rgba(238,246,247,.1);
+  --aqua:#9edbe1; --halo:#8acbd0; --teal:#286b7d; --teal-2:#3a8799; --paper:#edf3f4; --text:#172d34; --sub:#526970;
+  --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif; --serif:'Instrument Serif',ui-serif,Georgia,serif; --mono:'Geist Mono',ui-monospace,Menlo,monospace; --tamil:'Noto Sans Tamil','Geist',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--fg);font:400 17px/1.6 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--night)}
+img{max-width:100%}
+h1,h2,h3,p{margin:0}h1,h2,h3{font-weight:600;letter-spacing:-.035em;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:6px}
+em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--aqua)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1160px;margin:0 auto}
+.label{font:500 12px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 19px;border-radius:12px;font-weight:500;font-size:15.5px}
+.btn.p{background:linear-gradient(180deg,#f2fdfe,#bdeef2);color:#0d2a31}.btn.g{border:1px solid rgba(255,255,255,.18)}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* living background: the video's four blobs, drifting with scroll */
+#sky{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--night)}
+#sky .blob{position:absolute;left:50%;top:50%;border-radius:50%;filter:blur(calc(var(--u)*11));opacity:.55;will-change:transform}
+#sky .vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 40%,rgba(0,0,0,.6) 100%)}
+
+.nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;padding-block:16px}
+.nav .nbar{display:flex;align-items:center;gap:16px}
+.nav .home{display:flex;align-items:center;gap:12px}
+.nav .home img{height:22px;width:auto;flex:none;max-width:none}
+.nav .home .wm{height:30px}
+.nav .sep{width:1px;height:20px;background:var(--line)}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 auto;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(10,24,30,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nav li a{display:block;padding:7px 14px;border-radius:9px;font-size:14px;color:#c3d3d6}
+.nav li a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav .cta{font-size:14px;font-weight:500;padding:9px 14px;border-radius:10px;background:var(--fg);color:#0d2a31}
+
+/* pinned scenes */
+.scene{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.a{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);will-change:transform,opacity;pointer-events:none}
+.grp{position:absolute;left:50%;top:50%;width:0;height:0}
+.grp>.a{left:0;top:0}
+.hd{width:calc(var(--u)*90);text-align:center}
+.wide .hd{width:calc(var(--u)*62);text-align:left}
+.hd .label{color:var(--aqua);display:block;margin-bottom:calc(var(--u)*2)}
+.hd h2{font-size:calc(var(--u)*10.5);line-height:1;letter-spacing:-.045em;font-weight:700}
+.wide .hd h2{font-size:calc(var(--u)*7.6)}
+.hd p{color:#a9c1c5;margin-top:calc(var(--u)*3);font-size:max(15px,calc(var(--u)*4.1));line-height:1.5}
+.wide .hd p{font-size:max(16px,calc(var(--u)*2.2));max-width:calc(var(--u)*50)}
+.hd p.ta{font-family:var(--tamil);color:var(--fg)}
+.w{display:inline-block;overflow:hidden;padding:.06em .02em .16em;margin:-.06em -.02em -.16em;vertical-align:top}
+.w .i{display:inline-block;background:linear-gradient(180deg,#fff 30%,#bdeef2 100%);-webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform}
+.rm .w .i{transform:none!important}
+
+/* the app's own pieces (from the Yotes film) */
+.orbw{width:calc(var(--u)*24);height:calc(var(--u)*24)}
+.orb{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+ background:radial-gradient(circle at 35% 30%,#e6fbfc 0%,#8fdde3 18%,#2f95a6 55%,#15515f 100%);
+ box-shadow:0 0 calc(var(--u)*10) rgba(110,215,225,.45),inset 0 calc(var(--u)*-1.5) calc(var(--u)*4) rgba(0,30,40,.5)}
+.orb svg{width:38%;height:38%;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ring{position:absolute;inset:0;border-radius:50%;border:calc(var(--u)*.35) solid rgba(158,219,225,.6);animation:ring 2.4s cubic-bezier(.2,.6,.3,1) infinite}
+.ring:nth-child(2){animation-delay:.8s}.ring:nth-child(3){animation-delay:1.6s}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(1.9);opacity:0}}
+.cap{font-size:calc(var(--u)*5);font-weight:500;text-align:center;line-height:1.3;color:rgba(255,255,255,.94);width:calc(var(--u)*86)}
+.cap.ta{font-family:var(--tamil);font-size:calc(var(--u)*4.2)}
+.cap span{display:inline-block;margin:0 .14em;transition:opacity .25s,transform .25s,filter .25s}
+.cap span.off{opacity:0;transform:translateY(.4em);filter:blur(4px)}
+.card{width:calc(var(--u)*76);border-radius:calc(var(--u)*5);padding:calc(var(--u)*3.6) calc(var(--u)*3.8);
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(234,243,245,.95));color:var(--text);
+ box-shadow:0 calc(var(--u)*3) calc(var(--u)*9) rgba(0,0,0,.45),inset 0 1px 0 #fff;display:flex;align-items:center;gap:calc(var(--u)*3)}
+.card.ta{width:calc(var(--u)*86);gap:calc(var(--u)*2.4)}
+.ic{flex:none;width:calc(var(--u)*10);height:calc(var(--u)*10);border-radius:50%;background:#e0ebec;display:grid;place-items:center}
+.ic svg,.sv{width:52%;height:52%;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ct{flex:1;min-width:0}
+.t1{font-size:calc(var(--u)*4.1);font-weight:650;letter-spacing:-.015em;line-height:1.2}
+.t2{font-size:calc(var(--u)*3.2);color:var(--sub);margin-top:calc(var(--u)*.6)}
+.ta .t1,.ta .t2,.ta .pill{font-family:var(--tamil)}.ta .t1{font-size:calc(var(--u)*3.2);white-space:nowrap}.ta .t2{white-space:nowrap}.ta .ic{width:calc(var(--u)*8.4);height:calc(var(--u)*8.4)}
+.pill{flex:none;font-size:calc(var(--u)*3);font-weight:650;color:#fff;background:var(--teal);border-radius:99px;padding:calc(var(--u)*1.5) calc(var(--u)*3);display:flex;align-items:center;gap:calc(var(--u)*1);transition:background .3s,transform .3s}
+.ta .pill{font-size:calc(var(--u)*2.7);padding:calc(var(--u)*1.4) calc(var(--u)*2.4)}
+.pill svg{width:0;height:calc(var(--u)*3.4);stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:width .3s}
+.pill.done{background:#1b5363;transform:scale(1.04)}.pill.done svg{width:calc(var(--u)*3.4)}
+.bar{width:calc(var(--u)*80);height:calc(var(--u)*13);border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 calc(var(--u)*2) calc(var(--u)*6) rgba(0,0,0,.3);display:flex;align-items:center;padding:0 calc(var(--u)*4.4);gap:calc(var(--u)*2.4);font-size:calc(var(--u)*3.8);color:rgba(255,255,255,.95)}
+.bar svg{width:calc(var(--u)*5);height:calc(var(--u)*5);stroke:var(--aqua);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bar .tx{white-space:nowrap;overflow:hidden}
+.bar .ph{color:rgba(255,255,255,.5);white-space:nowrap}
+.caret{display:inline-block;width:2px;height:1.05em;background:var(--aqua);vertical-align:-.15em;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.bub{font-size:calc(var(--u)*4.1);font-weight:500;background:linear-gradient(180deg,var(--teal-2),var(--teal));color:#fff;padding:calc(var(--u)*3) calc(var(--u)*4.2);border-radius:calc(var(--u)*5) calc(var(--u)*5) calc(var(--u)*1.4) calc(var(--u)*5);white-space:nowrap;box-shadow:0 calc(var(--u)*2) calc(var(--u)*6) rgba(0,0,0,.35)}
+.dots{display:flex;gap:calc(var(--u)*1.2);padding:calc(var(--u)*3) calc(var(--u)*4);border-radius:99px;background:rgba(255,255,255,.12)}
+.dots i{width:calc(var(--u)*1.6);height:calc(var(--u)*1.6);border-radius:50%;background:#bdeef2;display:block;animation:dot 1.2s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-40%);opacity:1}}
+.ans{width:calc(var(--u)*80);border-radius:calc(var(--u)*5);padding:calc(var(--u)*4);background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(234,243,245,.95));color:var(--text);box-shadow:0 calc(var(--u)*3) calc(var(--u)*9) rgba(0,0,0,.45)}
+.ans .hd2{display:flex;align-items:center;gap:calc(var(--u)*1.6);font-size:calc(var(--u)*2.9);font-weight:650;color:var(--teal);margin-bottom:calc(var(--u)*1.8)}
+.ans .hd2 .sv{width:calc(var(--u)*4.4);height:calc(var(--u)*4.4)}
+.ans .bd{font-size:calc(var(--u)*3.9);line-height:1.38;font-weight:500;min-height:2.76em}
+.chips{display:flex;gap:calc(var(--u)*1.6);margin-top:calc(var(--u)*2.6)}
+.chip{font-size:calc(var(--u)*2.9);font-weight:600;background:#e0ebec;color:var(--teal);border-radius:99px;padding:calc(var(--u)*1.2) calc(var(--u)*2.6);transition:opacity .3s,transform .3s}
+.chip.off{opacity:0;transform:scale(.6)}
+.chip.hot{background:var(--teal);color:#fff}
+.tile{width:calc(var(--u)*39);height:calc(var(--u)*39);border-radius:calc(var(--u)*5.5);padding:calc(var(--u)*3.6);color:var(--text);
+ background:linear-gradient(160deg,rgba(255,255,255,.98),rgba(226,239,241,.95));box-shadow:0 calc(var(--u)*3) calc(var(--u)*8) rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden}
+.tile.dark{background:linear-gradient(160deg,var(--teal-2),#1f5e6e);color:#fff}
+.tile .lab{font-size:calc(var(--u)*2.7);font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);display:flex;gap:calc(var(--u)*1.2);align-items:center}
+.tile.dark .lab{color:#bdeef2}
+.tile .lab .sv{width:calc(var(--u)*3.6);height:calc(var(--u)*3.6)}
+.tile.dark .sv{stroke:#e9fbfc}
+.tile .tt{font-size:calc(var(--u)*3.9);font-weight:650;letter-spacing:-.015em;margin-top:auto;line-height:1.2}
+.tile .ts{font-size:calc(var(--u)*2.8);color:var(--sub);margin-top:calc(var(--u)*.6)}
+.tile.dark .ts{color:#cfe9ec}
+.ck{display:flex;align-items:center;gap:calc(var(--u)*1.6);font-size:calc(var(--u)*3);margin-top:calc(var(--u)*1.7);font-weight:500;transition:color .3s}
+.box{width:calc(var(--u)*3.6);height:calc(var(--u)*3.6);border-radius:calc(var(--u)*.9);border:2px solid #7a9298;display:grid;place-items:center;flex:none;transition:background .25s,border-color .25s}
+.box svg{width:80%;height:80%;stroke:#fff;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .35s .1s}
+.ck.on{color:#7a9298;text-decoration:line-through}.ck.on .box{background:var(--teal);border-color:var(--teal)}.ck.on .box svg{stroke-dashoffset:0}
+.rmd{display:flex;gap:calc(var(--u)*1.6);align-items:flex-start;margin-top:calc(var(--u)*2.2)}
+.rmd .dot{width:calc(var(--u)*3.2);height:calc(var(--u)*3.2);border-radius:50%;border:2px solid #7a9298;flex:none;margin-top:.2em}
+.rmd b{display:block;font-size:calc(var(--u)*3);font-weight:600}
+.rmd small{display:block;font-size:calc(var(--u)*2.5);color:var(--sub);margin-top:calc(var(--u)*.3)}
+.av{display:flex;margin-top:calc(var(--u)*3)}
+.av span{width:calc(var(--u)*9.5);height:calc(var(--u)*9.5);border-radius:50%;border:calc(var(--u)*.6) solid #f3f8f9;display:grid;place-items:center;font-size:calc(var(--u)*3.6);font-weight:650;margin-left:calc(var(--u)*-2.4);color:#173038}
+.av span:first-child{margin-left:0}
+.big-word{font-size:calc(var(--u)*13);font-weight:800;letter-spacing:-.05em;white-space:nowrap;background:linear-gradient(180deg,#fff 30%,#bdeef2 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ywm{width:calc(var(--u)*64);aspect-ratio:570/291;-webkit-mask:url(assets/yotes-wordmark.png) center/contain no-repeat;mask:url(assets/yotes-wordmark.png) center/contain no-repeat;
+ background:linear-gradient(100deg,#e9fbfc 0%,#9edbe1 45%,#ffffff 50%,#9edbe1 55%,#e9fbfc 100%);background-size:250% 100%}
+.pro{font-size:calc(var(--u)*4.5);font-weight:800;letter-spacing:.16em;color:#143138;padding:calc(var(--u)*1.5) calc(var(--u)*3) calc(var(--u)*1.5) calc(var(--u)*3.9);border-radius:99px;line-height:1;overflow:hidden;white-space:nowrap;
+ background:linear-gradient(100deg,#79b9c1 0%,#9edbe1 40%,#effcfd 50%,#9edbe1 60%,#79b9c1 100%);background-size:300% 100%;box-shadow:0 calc(var(--u)*.8) calc(var(--u)*3.5) rgba(158,219,225,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.star{width:calc(var(--u)*3);height:calc(var(--u)*3);background:#d9f7f9;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 4px #9edbe1)}
+.perk{font-size:calc(var(--u)*3.2);font-weight:600;color:var(--fg);background:rgba(255,255,255,.08);border:1px solid rgba(158,219,225,.3);border-radius:99px;padding:calc(var(--u)*1.6) calc(var(--u)*3.2);white-space:nowrap;display:flex;gap:calc(var(--u)*1.4);align-items:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.perk svg{width:calc(var(--u)*3.6);height:calc(var(--u)*3.6);stroke:var(--aqua);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tag{font-size:calc(var(--u)*7);font-weight:700;letter-spacing:-.04em;white-space:nowrap;text-align:center}
+.tag{width:calc(var(--u)*90);white-space:normal;line-height:1.05}.wide .tag{width:auto;white-space:nowrap}
+.tag2{font-family:var(--tamil);font-size:calc(var(--u)*3.9);font-weight:500;color:rgba(214,240,243,.8);white-space:nowrap}
+.ycta{pointer-events:auto;font-size:max(15px,calc(var(--u)*3));font-weight:650;color:#0d2a31;white-space:nowrap;background:linear-gradient(180deg,#f2fdfe,#bdeef2);padding:calc(var(--u)*2.2) calc(var(--u)*5);border-radius:99px;box-shadow:0 calc(var(--u)*1) calc(var(--u)*4) rgba(158,219,225,.35)}
+.flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(190,240,245,.5),transparent 60%);opacity:0;pointer-events:none}
+.hint{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);font:500 11px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* hero */
+.s-hero{height:190vh}
+.s-hero .copy{position:absolute;inset:0;display:grid;place-items:center;align-content:center;text-align:center;padding:0 16px;z-index:2}
+.s-hero .copy .ywm{width:min(300px,56vw);margin:0 auto 6px}
+.s-hero h1{font-size:clamp(44px,7.4vw,112px);line-height:.95;letter-spacing:-.05em;font-weight:700}
+.s-hero .sub{color:#a9c1c5;margin:18px auto 26px;max-width:540px;font-size:clamp(17px,1.5vw,20px)}
+.s-hero .btns{justify-content:center}
+.s-hero .copy .btns a{pointer-events:auto}
+.chip-soon{display:inline-flex;gap:8px;align-items:center;font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--aqua);border:1px solid rgba(158,219,225,.3);border-radius:99px;padding:6px 12px;margin-bottom:18px}
+.chip-soon i{width:6px;height:6px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua)}
+
+.s-talk{height:240vh}.s-ask{height:190vh}.s-calm{height:200vh}.s-pro{height:200vh}
+
+/* rendered backdrop (assets/photo.js): the Yotes night lake, lit by its orb */
+.ph{position:absolute;inset:0;overflow:hidden;background:#071015}
+.ph .fr{position:absolute;will-change:transform,filter}
+.ph img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ph .glow{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(225,255,255,.8),rgba(140,230,235,.3) 42%,transparent 72%);mix-blend-mode:screen;animation:ph-breathe 7s ease-in-out infinite}
+.ph .mist{position:absolute;left:-20%;width:140%;height:14%;transform:translateY(-50%);background:radial-gradient(45% 50% at 28% 50%,rgba(170,235,240,.22),transparent 70%),radial-gradient(38% 50% at 74% 50%,rgba(170,235,240,.18),transparent 70%);filter:blur(12px);animation:ph-drift 40s ease-in-out infinite alternate;pointer-events:none}
+.ph .m2{height:9%;opacity:.7;animation-duration:27s;animation-direction:alternate-reverse}
+.ph .shim{position:absolute;left:0;right:0;bottom:0;background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(255,255,255,.2) 13px 14px);background-size:100% 56px;mix-blend-mode:soft-light;-webkit-mask:linear-gradient(180deg,transparent,#000 35%);mask:linear-gradient(180deg,transparent,#000 35%);animation:ph-shim 5s linear infinite;opacity:.55}
+.ph .flash{position:absolute;inset:0;background:#fff4e6;opacity:0;pointer-events:none;z-index:5}
+@keyframes ph-shim{to{background-position:0 56px}}
+@keyframes ph-drift{from{transform:translate(-5%,-50%)}to{transform:translate(5%,-50%)}}
+@keyframes ph-breathe{50%{opacity:.7;transform:translate(-50%,-50%) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.ph *{animation:none!important}}
+#sky .blob{mix-blend-mode:screen;opacity:.28!important}
+#sky .ph{opacity:.9}
+
+
+section{padding-block:130px}
+.big{font-size:clamp(38px,5.4vw,80px);line-height:1;letter-spacing:-.045em}
+.lede{color:var(--muted);font-size:19px;max-width:560px;margin-top:20px}
+.film{margin-top:56px;border-radius:28px;overflow:hidden;border:1px solid var(--line);position:relative;background:#000}
+.film video{display:block;width:100%;height:auto}
+.film button{position:absolute;right:18px;bottom:18px;font:500 13px var(--sans);color:var(--fg);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);padding:9px 14px;border-radius:999px;cursor:pointer}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:56px}
+.pl{border:1px solid var(--line);border-radius:24px;padding:36px;background:rgba(7,16,21,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pl h3{font-size:30px}.pl .s{color:var(--muted);margin:4px 0 20px}
+.pl ul{list-style:none;margin:0;padding:0}.pl li{padding:10px 0;border-top:1px solid var(--line);color:#cfe0e2}
+.pl.plpro{background:radial-gradient(80% 80% at 100% 0,rgba(95,195,207,.25),transparent),var(--ink-2);border-color:rgba(95,195,207,.35)}
+.badge{display:inline-block;font:700 11px var(--mono);letter-spacing:.14em;background:linear-gradient(100deg,#79b9c1,#effcfd 50%,#79b9c1);color:#143138;padding:5px 9px;border-radius:999px;vertical-align:middle;margin-left:8px}
+.help{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px}
+details{border-top:1px solid var(--line);padding:20px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-size:19px;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::after{content:"+";color:var(--muted)}details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:10px;max-width:560px}
+.contact{border:1px solid var(--line);border-radius:20px;padding:28px;background:var(--ink-2)}
+.contact .mail{font:500 18px var(--mono);margin:10px 0 6px;user-select:all}
+.todo{background:rgba(255,196,0,.12);color:#ffe27a;border-radius:6px;padding:1px 6px}
+.policy{max-width:760px}
+.policy h3{font-size:22px;margin:40px 0 10px}
+.policy p,.policy li{color:#b9cacd}
+.policy ul{padding-left:20px}
+.policy li{margin:6px 0}
+#privacy,#support,#plans,#film{background:linear-gradient(180deg,transparent,rgba(7,16,21,.85) 120px)}
+footer{border-top:1px solid var(--line);padding-block:44px 60px;color:var(--muted);font-size:14.5px;background:var(--night)}
+footer .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:center}
+footer img{height:30px;width:auto}
+
+@media (max-width:860px){
+  .nav ul,.nav .sep,.nav .home .wm{display:none}
+  .nav .nbar{justify-content:space-between}
+  .plans,.help{grid-template-columns:minmax(0,1fr)}
+  section{padding-block:90px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .s-hero,.s-talk,.s-ask,.s-calm,.s-pro{height:auto}
+  .stage{height:100vh;height:100svh}
+  .ring,.dots i,.caret{animation:none}
+}
+
+/* round 7 nav: one floating glass bar, so the page never shows through behind the logo and links */
+.nav{padding-block:12px}
+.nav .nbar{max-width:1180px;padding:8px 8px 8px 18px;border-radius:16px;background:rgba(10,12,16,.62);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nav ul{border:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.nav a img{display:block;flex:none;max-width:none}
+</style></head><body>
+<div id="sky" aria-hidden="true"><div class="vig"></div></div>
+
+<nav class="nav gut" aria-label="Yotes">
+  <div class="wrap nbar">
+    <a class="home" href="./" aria-label="Thunder AI Labs home"><img src="assets/logo-white.png" alt="Thunder AI Labs" width="67" height="22"><span class="sep"></span><img class="wm" src="assets/yotes-wordmark.png" alt="Yotes" width="59" height="30"></a>
+    <ul><li><a href="#talk">Talk</a></li><li><a href="#ask">Ask</a></li><li><a href="#calm">Spaces</a></li><li><a href="#pro">Pro</a></li><li><a href="#support">Support</a></li><li><a href="#privacy">Privacy</a></li></ul>
+    <a class="cta" href="https://apps.apple.com/app/id6756503509" target="_blank" rel="noopener">Download</a>
+  </div>
+</nav>
+
+<main>
+<div class="scene s-hero" id="top">
+  <div class="stage">
+    <div class="grp" id="hGrp">
+      <div class="a orbw" id="hOrb"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="orb"><svg viewBox="0 0 24 24" data-i="mic"></svg></div></div>
+    </div>
+    <div class="copy" id="hCopy">
+      <div>
+        <div class="ywm" role="img" aria-label="Yotes"></div>
+        <h1>Just say it.<br><em>Yotes remembers.</em></h1>
+        <p class="sub">Notes, reminders and Spaces you can talk to, in English or Tamil.</p>
+        <div class="btns"><a class="btn p" href="https://apps.apple.com/app/id6756503509" target="_blank" rel="noopener"> Download on the App Store</a><a class="btn g" href="#film">▶ Watch the film</a></div>
+      </div>
+    </div>
+    <div class="hint" id="hHint">Scroll</div>
+  </div>
+</div>
+
+<div class="scene s-talk" id="talk">
+  <div class="stage">
+    <div class="a hd" id="tH1"><span class="label">Talk</span><h2>Just say it.</h2><p>Talk the way you think. Yotes listens, answers out loud, and turns what you say into reminders you can confirm with one tap.</p></div>
+    <div class="a hd" id="tH2"><span class="label">Your language</span><h2>In Tamil, too.</h2><p>Speak English, Tamil, or a mix of both. Yotes understands the way families really talk.</p><p class="ta">மனதில் என்ன இருக்கிறது?</p></div>
+    <div class="grp" id="tGrp">
+      <div class="a orbw" id="tOrb"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="orb"><svg viewBox="0 0 24 24" data-i="mic"></svg></div></div>
+      <div class="a cap" id="tCap1" data-words>Remind me to call Amma at 6</div>
+      <div class="a cap ta" id="tCap2" data-words>நாளை காலை 9 மணிக்கு டாக்டர் அப்பாயின்ட்மென்ட் ஞாபகப்படுத்து</div>
+      <div class="a card" id="tCard1"><div class="ic"><svg viewBox="0 0 24 24" data-i="bell"></svg></div><div class="ct"><div class="t1">Call Amma</div><div class="t2">Today · 6:00 pm</div></div><div class="pill"><svg viewBox="0 0 24 24" data-i="check"></svg><span>Confirm</span></div></div>
+      <div class="a card ta" id="tCard2"><div class="ic"><svg viewBox="0 0 24 24" data-i="bell"></svg></div><div class="ct"><div class="t1">டாக்டர் அப்பாயின்ட்மென்ட்</div><div class="t2">நாளை · காலை 9:00</div></div><div class="pill"><svg viewBox="0 0 24 24" data-i="check"></svg><span>உறுதிசெய்</span></div></div>
+    </div>
+    <div class="flash" id="tFlash"></div>
+  </div>
+</div>
+
+<div class="scene s-ask" id="ask">
+  <div class="stage">
+    <div class="a hd" id="aH"><span class="label">Ask</span><h2>Ask anything.</h2><p>Questions are answered from your own notes and reminders, with cards you can act on. No digging, no scrolling back.</p></div>
+    <div class="grp" id="aGrp">
+      <div class="a bar" id="aBar"><svg viewBox="0 0 24 24" data-i="spark"></svg><span class="tx" id="aTx"></span><span class="caret"></span><span class="ph" id="aPh">Ask Yotes…</span></div>
+      <div class="a bub" id="aBub">What’s left to book for Goa?</div>
+      <div class="a dots" id="aDots"><i></i><i></i><i></i></div>
+      <div class="a ans" id="aAns"><div class="hd2"><svg class="sv" viewBox="0 0 24 24" data-i="spark"></svg>Yotes · from Trip to Goa</div><div class="bd" id="aBd"></div><div class="chips"><span class="chip">3 nights</span><span class="chip">₹4,500 a night</span><span class="chip hot">To book</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="scene s-calm" id="calm">
+  <div class="stage">
+    <div class="a big-word" id="cW1">Notes.</div><div class="a big-word" id="cW2">Reminders.</div><div class="a big-word" id="cW3">Spaces.</div><div class="a big-word" id="cW4">Family.</div>
+    <div class="a hd" id="cH"><span class="label">Everything else</span><h2>All in one calm place.</h2><p>Lists you can tick, a calm timeline of what's next, a Space for every part of life, and family who can share it with you.</p></div>
+    <div class="grp" id="cGrp">
+      <div class="a tile" id="cT1"><div class="lab"><svg class="sv" viewBox="0 0 24 24" data-i="note"></svg>Notes</div><div class="tt">Shopping for Saturday</div><div class="ck"><span class="box"><svg viewBox="0 0 24 24" data-i="check"></svg></span>Jasmine flowers</div><div class="ck"><span class="box"><svg viewBox="0 0 24 24" data-i="check"></svg></span>Sweets</div><div class="ck"><span class="box"><svg viewBox="0 0 24 24" data-i="check"></svg></span>Gift for Appa</div></div>
+      <div class="a tile" id="cT2"><div class="lab"><svg class="sv" viewBox="0 0 24 24" data-i="bell"></svg>Upcoming</div><div class="rmd"><span class="dot"></span><div><b>Electricity bill</b><small>Today · 6:00 pm</small></div></div><div class="rmd"><span class="dot"></span><div><b>Doctor</b><small>Tomorrow · 9:00 am</small></div></div><div class="rmd"><span class="dot"></span><div><b>Call Lakshmi</b><small>Thu · 9:00 am</small></div></div></div>
+      <div class="a tile dark" id="cT3"><div class="lab"><svg class="sv" viewBox="0 0 24 24" data-i="plane"></svg>Space</div><div class="tt">Trip to Goa</div><div class="ts">Train booked · 2 to book</div></div>
+      <div class="a tile" id="cT4"><div class="lab"><svg class="sv" viewBox="0 0 24 24" data-i="users"></svg>Shared</div><div class="tt">Family</div><div class="av"><span style="background:#bdeef2">A</span><span style="background:#f4d6a6">L</span><span style="background:#c9d3f2">R</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="scene s-pro" id="pro">
+  <div class="stage">
+    <div class="a ywm" id="pWm" role="img" aria-label="Yotes"></div>
+    <div class="a pro" id="pPro">PRO</div>
+    <div class="a star" id="pS1"></div><div class="a star" id="pS2"></div><div class="a star" id="pS3"></div>
+    <div class="a perk" id="pK1"><svg viewBox="0 0 24 24" data-i="mic"></svg>Hands-free talk</div>
+    <div class="a perk" id="pK2"><svg viewBox="0 0 24 24" data-i="grid"></svg>Show it a bill or a list</div>
+    <div class="a perk" id="pK3"><svg viewBox="0 0 24 24" data-i="spark"></svg>Ask anything</div>
+    <div class="a perk" id="pK4"><svg viewBox="0 0 24 24" data-i="users"></svg>Natural voice replies</div>
+    <div class="a tag" id="pTag">Your space, in your language.</div>
+    <div class="a tag2" id="pTag2">உங்கள் இடம், உங்கள் மொழியில்</div>
+    <a class="a ycta" id="pCta" href="https://apps.apple.com/app/id6756503509" target="_blank" rel="noopener">Try it free on the App Store</a>
+    <div class="flash" id="pFlash"></div>
+  </div>
+</div>
+<section class="gut" id="film">
+  <div class="wrap">
+    <span class="label">The film</span>
+    <h2 class="big" style="margin-top:16px">Fifteen seconds <em>of calm.</em></h2>
+    <div class="film"><video id="vid" src="assets/yotes-reveal.mp4" poster="assets/v13.5.jpg" muted loop playsinline preload="metadata"></video><button id="snd" type="button">Sound on</button></div>
+  </div>
+</section>
+
+<section class="gut" id="plans" style="padding-top:0">
+  <div class="wrap">
+    <span class="label">Plans</span>
+    <h2 class="big" style="margin-top:16px">Free for life. <em>Pro when you want help.</em></h2>
+    <div class="plans">
+      <div class="pl"><h3>Basic</h3><div class="s">Free</div><ul><li>Notes, reminders and Spaces</li><li>Works with no account</li><li>Backup and family sharing</li><li>A little AI help each month</li></ul></div>
+      <div class="pl plpro"><h3>Yotes<span class="badge">PRO</span></h3><div class="s">Pricing to be announced</div><ul><li>Hands-free voice conversations</li><li>Show: read photos and documents</li><li>Ask anything, search by meaning</li><li>Natural voice replies</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="gut" id="support" style="padding-top:0">
+  <div class="wrap help">
+    <div>
+      <span class="label">Support</span>
+      <h2 class="big" style="margin-top:16px;font-size:clamp(34px,4.4vw,60px)">We're here <em>to help.</em></h2>
+      <div class="contact" style="margin-top:32px"><span class="label">Email us</span><p class="mail"><span class="todo">support@ address to be added</span></p><p style="color:var(--muted);font-size:15px">We usually reply within two working days.</p></div>
+    </div>
+    <div>
+      <details open><summary>Which languages does Yotes speak?</summary><p>English and Tamil today, including mixed Tamil and English. More languages will follow once native speakers have tested them.</p></details>
+      <details><summary>Do I need an account?</summary><p>No. Notes, reminders and Spaces work fully on your phone without one. Sign in only if you want backup, sync or family sharing.</p></details>
+      <details><summary>How do I delete my account?</summary><p>Open Settings, then Account, then Delete account. This removes your account and everything stored with it on our servers.</p></details>
+      <details><summary>Why aren't my reminders ringing?</summary><p>Check that notifications are allowed for Yotes in your phone's Settings, and that Focus or Do Not Disturb isn't silencing them.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="gut" id="privacy" style="padding-top:0">
+  <div class="wrap policy">
+    <span class="label">Privacy policy</span>
+    <h2 class="big" style="margin-top:16px;font-size:clamp(34px,4.4vw,60px)">Your notes <em>stay yours.</em></h2>
+    <p style="margin-top:16px">Provider: Thunder AI Labs. Effective date: 30 October 2026.</p>
+    <h3>In short</h3>
+    <ul><li>Yotes works fully on your phone without an account, and then nothing you write leaves your phone.</li><li>If you sign in, your notes, reminders and Spaces are backed up so they can sync and be shared with people you choose.</li><li>If you use Yotes Pro, what you ask the assistant, and only the records needed to answer, is sent to AI services to produce the answer. Our server doesn't keep it.</li><li>We don't sell your data, show ads, or use tracking or analytics.</li></ul>
+    <h3>Without an account</h3><p>Notes, reminders and Spaces are stored in a database on your phone. Reminders ring through your phone's own notifications. None of this is sent to us.</p>
+    <h3>With an account</h3><p>You can sign in with Apple or with a one-time code sent to your email. Then we store:</p>
+    <ul><li><b>Account details:</b> your email address, an optional display name, and your app language, which we use to send emails in your language.</li><li><b>Your records:</b> notes, reminders, Spaces and their items, when you turn on backup. They are stored with Supabase, our database provider, on servers in the United States. Only your account, and people you invite to a Space, can read them.</li><li><b>Sharing:</b> when you invite someone to a Space, we store their email address so they can accept. Members of a shared Space can see each other's names and email addresses.</li><li><b>Pro waitlist:</b> if you join the waitlist, your email address and language.</li></ul>
+    <h3>The assistant and AI</h3>
+    <ul><li>Typed or spoken questions and photos you choose to send go to our server and on to Anthropic (Claude), which writes the answer. Anthropic is based in the United States and Sarvam AI in India.</li><li>To answer, the assistant may read records on your phone. Only the records it needs are sent, for that one answer.</li><li>Your voice is sent to Sarvam AI to turn speech into text. If replies are read aloud, the reply text is sent to Sarvam to produce speech.</li><li>Our server keeps none of this content, and doesn't log it. It logs only technical details such as your account id, request sizes and usage counts, to run the service and track costs.</li><li>Anthropic and Sarvam process this data to provide the service, under their terms for business customers. Anthropic's commercial terms don't allow it to train models on this data.</li><li>Any change the assistant suggests is saved only after you tap Confirm.</li></ul>
+    <h3>Permissions</h3><p>Yotes asks for notifications (so reminders ring), the microphone (only while you talk to the assistant), and the camera and photos (only when you take or choose a photo for the assistant). You can change these at any time in your phone's Settings.</p>
+    <h3>Keeping and deleting data</h3><p>Your data stays until you delete it. You can delete your account in Settings → Account. This removes your account and everything stored with it on our servers. Records on your phone stay there until you delete them or remove the app.</p>
+    <h3>Children</h3><p>Yotes isn't directed at children under 13.</p>
+    <h3>Changes</h3><p>If this policy changes, we'll update this page and the date above. Significant changes will also be shown in the app.</p>
+    <h3>Contact</h3><p>Questions about privacy: <span class="todo">contact email to be added</span></p>
+  </div>
+</section>
+
+</main>
+<footer class="gut"><div class="wrap row"><a href="./"><img src="assets/logo-white.png" alt="Thunder AI Labs" width="92" height="30"></a><span><a href="#support">Support</a> · <a href="#privacy">Privacy</a> · <a href="./">Thunder AI Labs</a> · © 2026</span></div></footer>
+<script src="assets/fx.js"></script>
+<script src="assets/photo.js"></script>
+<script>
+const I={
+ mic:'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ spark:'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/>',
+ plane:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+ note:'<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+ grid:'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'
+};
+document.querySelectorAll('svg[data-i]').forEach(s=>s.innerHTML=I[s.dataset.i]);
+document.querySelectorAll('[data-words]').forEach(el=>{el.innerHTML=el.textContent.trim().split(/\s+/).map(w=>`<span class="off">${w}</span>`).join('')});
+const {seg,ease,clamp,anim,put,words,type,flag,scene,group,head}=FX;
+const $=s=>document.querySelector(s);
+const reveal=(el,t)=>{const ws=el.children,n=Math.round(ws.length*clamp(t));for(let i=0;i<ws.length;i++)ws[i].classList.toggle('off',i>=n);};
+const fade=(el,o)=>{el.style.opacity=o;el.style.visibility=o<.01?'hidden':'visible';};
+
+/* sky: the film's four blobs drift as the page scrolls */
+const sky=$('#sky');
+const NIGHT=Photo.build(sky,{land:{src:'assets/bg-yotes-night.jpg',ar:1536/864,sun:[70.8,58.2],hz:58.7,glow:16},port:{src:'assets/bg-yotes-night-p.jpg',ar:1024/1536,sun:[57.8,60.5],hz:61,glow:24}});
+const blobs=[['#1f7f90',95,.6,0],['#34507a',85,.55,2],['#7fd2da',55,.35,4],['#3fa9b8',60,.45,1]].map(([c,s,o,ph])=>{const b=document.createElement('div');b.className='blob';b.style.cssText=`width:calc(var(--u)*${s});height:calc(var(--u)*${s});background:${c};opacity:${o}`;b.ph=ph;sky.prepend(b);return b;});
+function drift(){const g=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  NIGHT.fit();NIGHT.fr.style.transform=`scale(${1.04+g*.12})`;
+  blobs.forEach((b,i)=>{const a=g*Math.PI*2*(1+i*.35)+b.ph;b.style.transform=`translate(-50%,-50%) translate(${Math.cos(a)*32}vw,${Math.sin(a*1.3)*26}vh)`;});}
+addEventListener('scroll',()=>requestAnimationFrame(drift),{passive:true});drift();
+
+/* hero: the mic orb rises behind the title, then the camera flies through it */
+const hOrb=anim($('#hOrb'),[[0,{o:0,y:80,s:.6}],[.28,{o:0,y:55,s:.8}],[.5,{o:1,y:0,s:1.5}],[.66,{o:1,y:0,s:1.7}],[.92,{o:0,y:0,s:9,b:2}]]);
+scene($('.s-hero'),(p,L,e,t,sp)=>{
+  group($('#hGrp'),{cx:0,cy:0,k:1});hOrb(sp);
+  const c=$('#hCopy'),k=seg(sp,.3,.62);c.style.opacity=1-k;c.style.transform=`translateY(${-k*90}px) scale(${1-k*.06})`;c.style.filter=k>.02?`blur(${k*6}px)`:'';
+  fade($('#hHint'),1-seg(sp,0,.08));
+},.0,{dur:2600,cap:0});
+
+/* talk: speak, watch the words appear, the reminder card lands, Confirm. Then the same in Tamil. */
+const tH1=FX.K([[0,{o:1,y:0,b:0}],[.46,{o:1}],[.52,{o:0,y:-6,b:1}]]);
+const tH2=FX.K([[.5,{o:0,y:6,b:1}],[.56,{o:1,y:0,b:0}],[1,{o:1}]]);
+const tOrb=anim($('#tOrb'),[[0,{o:1,s:1}],[.29,{y:0,s:1}],[.35,{y:-27,s:.55}],[.48,{y:-27,s:.55}],[.55,{y:0,s:1}],[.75,{y:0,s:1}],[.81,{y:-27,s:.55}],[1,{y:-27,s:.55}]]);
+const tCap1=anim($('#tCap1'),[[0,{o:0,y:24}],[.07,{o:1,y:22}],[.29,{o:1,y:22,b:0}],[.34,{o:0,y:30,b:1.5}]]);
+const tCard1=anim($('#tCard1'),[[0,{o:0,y:32,s:.9,b:1.5}],[.3,{o:0,y:32,s:.9,b:1.5}],[.37,{o:1,y:8,s:1,b:0}],[.46,{o:1,y:8}],[.51,{o:0,y:-8,s:.94,b:1.5}]]);
+const tCap2=anim($('#tCap2'),[[.54,{o:0,y:26}],[.58,{o:1,y:24}],[.75,{o:1,y:24,b:0}],[.8,{o:0,y:32,b:1.5}]]);
+const tCard2=anim($('#tCard2'),[[.76,{o:0,y:32,s:.9,b:1.5}],[.83,{o:1,y:8,s:1,b:0}],[1,{o:1,y:8}]]);
+scene($('.s-talk'),(p,L,e)=>{
+  head($('#tH1'),L,FX.at(tH1,p));head($('#tH2'),L,FX.at(tH2,p));
+  words($('#tH1 h2'),seg(e,.35,1));words($('#tH2 h2'),seg(p,.52,.64));
+  group($('#tGrp'),L);tOrb(p);if(e<1){const o=$('#tOrb');o.style.opacity=seg(e,.4,1);o.style.visibility='visible';}tCap1(p);tCard1(p);tCap2(p);tCard2(p);
+  reveal($('#tCap1'),seg(p,.08,.26));reveal($('#tCap2'),seg(p,.59,.73));
+  flag($('#tCard1 .pill'),'done',p>.415);flag($('#tCard2 .pill'),'done',p>.9);
+  fade($('#tFlash'),Math.max(0,1-Math.abs(p-.42)*30)*.5+Math.max(0,1-Math.abs(p-.905)*30)*.5);
+},.44,{dur:11000});
+
+/* ask: the bar types, the question becomes a bubble, Yotes thinks, then answers from the trip Space */
+const ANS='Your train is booked. The beach hotel is still to book.', Q='What’s left to book for Goa?';
+const aH=FX.K([[0,{o:1}],[1,{o:1}]]);
+const aBar=anim($('#aBar'),[[0,{o:1,y:0}],[.38,{o:1,y:0}],[.45,{o:0,y:34,s:.92}]]);
+const aBub=anim($('#aBub'),[[.4,{o:0,x:4,y:-16,s:.8}],[.46,{o:1,x:8,y:-30,s:1}],[1,{o:1,x:8,y:-30}]]);
+const aDots=anim($('#aDots'),[[.46,{o:0,x:-28,y:-13,s:.6}],[.5,{o:1,s:1}],[.58,{o:1}],[.62,{o:0,s:.6}]]);
+const aAns=anim($('#aAns'),[[.58,{o:0,y:24,s:.94,b:1.5}],[.64,{o:1,y:6,s:1,b:0}],[1,{o:1,y:6}]]);
+const chips=[...document.querySelectorAll('#aAns .chip')];
+scene($('.s-ask'),(p,L,e)=>{
+  head($('#aH'),L,FX.at(aH,p));words($('#aH h2'),seg(e,.35,1));
+  group($('#aGrp'),L);aBar(p);aBub(p);aDots(p);aAns(p);
+  const t=seg(p,.1,.34);type($('#aTx'),Q,t);fade($('#aPh'),t>0?0:1);
+  type($('#aBd'),ANS,seg(p,.65,.82));
+  chips.forEach((c,i)=>flag(c,'off',p<.84+i*.04));
+},.95,{dur:7000});
+
+/* calm: four words, four tiles fly in from the corners and snap into a grid, the list ticks itself off */
+const tiles=[['#cT1',-21,-21,-95,-80,-28],['#cT2',21,-21,95,-85,24],['#cT3',-21,21,-90,85,20],['#cT4',21,21,95,80,-22]];
+const tileA=tiles.map(([id,x,y,fx,fy,r],i)=>{const a=.03+i*.075;return anim($(id),[[a,{o:0,x:fx,y:fy,r,s:.6,b:3}],[a+.07,{o:1,x,y,r:0,s:1,b:0}],[.8,{x,y}],[1,{x:x*1.12,y:y*1.12,s:1.02}]]);});
+const cW=[1,2,3,4].map(i=>{const a=.02+(i-1)*.075;return [$('#cW'+i),FX.K([[a,{o:i>1?0:1,s:i>1?1.12:1,b:i>1?2:0}],[a+.02,{o:1,s:1,b:0}],[a+.055,{o:1,s:.97}],[a+.075,{o:0,s:.9,b:2}]])];});
+const cH=FX.K([[.31,{o:0,y:5,b:1}],[.36,{o:1,y:0,b:0}],[1,{o:1}]]);
+const cks=[...document.querySelectorAll('#cT1 .ck')];
+scene($('.s-calm'),(p,L)=>{
+  cW.forEach(([el,k])=>head(el,L,FX.at(k,p)));
+  head($('#cH'),L,FX.at(cH,p));words($('#cH h2'),seg(p,.31,.43));
+  group($('#cGrp'),L);tileA.forEach(f=>f(p));
+  cks.forEach((c,i)=>flag(c,'on',p>.5+i*.09));
+},.9,{dur:8000});
+
+/* pro: the wordmark shines, the PRO capsule fills, the perks gather, then the line in both languages and the App Store */
+const pWm=FX.K([[0,{o:1,s:1,b:0,y:-6}],[.5,{y:-8}],[.6,{y:-34,s:.5}],[1,{y:-34,s:.5}]]);
+const pPro=FX.K([[.12,{o:0,x:23,y:12,s:.5}],[.2,{o:1,s:1}],[.5,{x:23,y:10,s:1}],[.6,{x:12,y:-28,s:.55}],[1,{x:12,y:-28,s:.55}]]);
+const stars=[[-34,-24],[36,-20],[31,22]].map(([x,y],i)=>anim($('#pS'+(i+1)),[[.18+i*.03,{o:0,x,y,s:0,r:0}],[.24+i*.03,{o:1,x,y,s:1.3,r:90}],[.46,{o:1,s:.9,r:180}],[.52,{o:0,s:0,r:220}]]));
+const perks=[1,2,3,4].map(i=>$('#pK'+i));
+scene($('.s-pro'),(p,L)=>{
+  const wm=$('#pWm');put(wm,FX.at(pWm,p));wm.style.backgroundPosition=`${100-p*220}% 0`;
+  const pr=$('#pPro');put(pr,FX.at(pPro,p));pr.style.backgroundPosition=`${100-seg(p,.15,.45)*100}% 0`;
+  stars.forEach(f=>f(p));
+  perks.forEach((el,i)=>{const a=.26+i*.04,pos=L.wide?[(i%2?27:-27),30+Math.floor(i/2)*10]:[0,28+i*9];
+    put(el,FX.at(FX.K([[a,{o:0,x:pos[0],y:pos[1]+6,s:.9,b:1}],[a+.05,{o:1,y:pos[1],s:1,b:0}],[.5,{o:1,y:pos[1]}],[.56,{o:0,y:pos[1]-6,b:1.5}]]),p));});
+  const n=L.wide?0:1;
+  put($('#pTag'),FX.at(FX.K([[.54,{o:0,y:12,b:2}],[.62,{o:1,y:n?0:4,b:0}],[1,{o:1,y:n?0:4}]]),p));
+  put($('#pTag2'),FX.at(FX.K([[.6,{o:0,y:n?20:20}],[.68,{o:1,y:n?16:14}],[1,{o:1,y:n?16:14}]]),p));
+  const c=$('#pCta');put(c,FX.at(FX.K([[.66,{o:0,y:34,s:.9}],[.74,{o:1,y:n?30:26,s:1}],[1,{o:1,y:n?30:26}]]),p));c.style.pointerEvents=p>.7?'auto':'none';
+  fade($('#pFlash'),Math.max(0,1-Math.abs(p-.53)*16)*.7);
+},1,{dur:8000});
+FX.start();
+
+/* film plays muted while on screen */
+const vid=$('#vid');
+if('IntersectionObserver' in window && !FX.reduce){ new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) vid.play().catch(()=>{}); else vid.pause(); }),{threshold:.4}).observe(vid); }
+$('#snd').addEventListener('click',()=>{ vid.muted=!vid.muted; $('#snd').textContent=vid.muted?'Sound on':'Sound off'; vid.play().catch(()=>{}); });
+</script>
+</body></html>

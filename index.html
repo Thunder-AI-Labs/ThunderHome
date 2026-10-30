@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Thunder AI Labs builds AI products that feel calm and personal. Meet Yotes and Lokah.">
+<title>Thunder AI Labs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+/* Layout: a film you scroll. One bolt is drawn by your scroll from the opening strike down through every product, each of which gets its own full-screen scene. Dark-first single look. */
+:root{
+  --ink:#07080b; --ink-2:#0d0f14; --fg:#f3f2ee; --muted:#8c8f99; --line:rgba(243,242,238,.09);
+  --bolt:#ffc400; --bolt-hot:#ffe27a; --peach:#f4ba91; --tide:#7097ad; --teal:#5fc3cf; --navy:#0b1822;
+  --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --serif:'Instrument Serif',ui-serif,Georgia,serif;
+  --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--fg);font:400 17px/1.6 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased;position:relative}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--ink)}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance;font-weight:600;letter-spacing:-.035em}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--bolt);outline-offset:3px;border-radius:6px}
+em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1200px;margin:0 auto}
+.label{font:500 12px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 19px;border-radius:12px;font-weight:500;font-size:15.5px;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.p{background:var(--fg);color:var(--ink)}.btn.g{border:1px solid rgba(255,255,255,.18);background:rgba(7,8,11,.35)}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* nav */
+.nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;padding-block:16px}
+.nav .nbar{display:flex;align-items:center;gap:20px}
+.nav img{height:26px;width:auto;display:block}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 auto;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(13,15,20,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nav li a{display:block;padding:7px 14px;border-radius:9px;font-size:14px;color:#c4c6cd}
+.nav li a:hover{background:rgba(255,255,255,.06);color:var(--fg)}
+.nav .cta{font-size:14px;font-weight:500;padding:9px 14px;border-radius:10px;background:var(--fg);color:var(--ink)}
+
+/* the travelling bolt */
+#trail{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+
+/* scenes */
+.scene{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center}
+
+/* 1 strike */
+.s-strike{height:150vh}
+.s-strike .glow{position:absolute;inset:0;background:radial-gradient(40% 40% at 50% 50%,rgba(255,196,0,.16),transparent 70%)}
+.s-strike .after{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 16px}
+.s-strike h1{font-size:clamp(52px,10vw,156px);line-height:.92;letter-spacing:-.055em}
+.s-strike h1 em{color:var(--bolt)}
+.s-strike .sub{margin:28px auto 0;max-width:560px;color:#b7b9c1;font-size:clamp(17px,1.6vw,21px)}
+.half{position:absolute;inset:0;background:var(--ink);display:grid;place-items:center;will-change:transform}
+.half.l{clip-path:polygon(0 0,56% 0,46% 47%,55% 47%,44% 100%,0 100%)}
+.half.r{clip-path:polygon(56% 0,100% 0,100% 100%,44% 100%,55% 47%,46% 47%)}
+.half .mark{display:grid;justify-items:center;gap:22px;text-align:center}
+.half .mark img{width:min(560px,78vw);height:auto}
+#crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flash{position:absolute;inset:0;background:#fff7d6;opacity:0;pointer-events:none;mix-blend-mode:screen}
+.scrollcue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:grid;justify-items:center;gap:10px}
+.scrollcue i{width:1px;height:42px;background:linear-gradient(var(--muted),transparent)}
+
+/* intro */
+.intro{padding-block:160px 120px;position:relative;z-index:3}
+.intro p.big{font-size:clamp(30px,4.2vw,58px);line-height:1.12;letter-spacing:-.03em;font-weight:500;max-width:1000px;color:#5d606a}
+.intro p.big span{color:var(--fg);transition:color .4s}
+.intro .count{display:flex;gap:48px;margin-top:64px;flex-wrap:wrap}
+.intro .count div{display:grid;gap:6px}
+.intro .count b{font-size:40px;font-weight:600;letter-spacing:-.03em}
+
+/* product scenes */
+.s-prod{height:170vh}
+.s-prod .stage{place-items:stretch}
+.pframe{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:40px;width:min(1200px,100%);margin:0 auto;padding:96px max(16px,env(safe-area-inset-left,0px)) 40px}
+.pnum{position:absolute;top:96px;left:max(16px,env(safe-area-inset-left,0px));display:flex;gap:12px;align-items:center}
+.pnum .bar{width:80px;height:2px;background:var(--line);position:relative;overflow:hidden}
+.pnum .bar i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.ptext{position:relative;z-index:3}
+.ptext .logo{height:46px;width:auto;margin-bottom:24px;display:block}
+.ptext h2{font-size:clamp(42px,6vw,92px);line-height:.95;letter-spacing:-.05em}
+.ptext h2 em{color:var(--accent)}
+.ptext p{color:#aeb1ba;font-size:clamp(17px,1.5vw,20px);max-width:460px;margin:22px 0 30px}
+.ptext .meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.chip{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border-radius:999px;border:1px solid var(--line);color:#c9cbd2}
+.chip.live{color:#a5f0bd;border-color:rgba(126,226,160,.35)}
+.chip.soon{color:var(--peach);border-color:rgba(244,186,145,.4)}
+.pvis{position:relative;height:min(76vh,720px);display:grid;place-items:center}
+.pvis .aura{position:absolute;inset:-5%;background:radial-gradient(closest-side,var(--aura),transparent);filter:blur(30px)}
+.s-yotes{--accent:var(--teal);--aura:rgba(95,195,207,.28)}
+.s-lokah{--accent:var(--peach);--aura:rgba(244,186,145,.24)}
+.s-yotes.lit .stage{background:radial-gradient(60% 60% at 75% 55%,rgba(95,195,207,.08),transparent)}
+.s-lokah.lit .stage{background:radial-gradient(60% 60% at 75% 55%,rgba(244,186,145,.08),transparent)}
+
+.phone{position:absolute;width:min(270px,30vw);aspect-ratio:9/19.5;border-radius:44px;padding:9px;background:linear-gradient(145deg,#2a2d33,#0f1114);box-shadow:0 50px 100px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.1);will-change:transform}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#e8f1f2}
+.phone .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+
+.sun{position:absolute;width:min(380px,40vw);aspect-ratio:2/1;border-radius:999px 999px 0 0;background:radial-gradient(120% 140% at 50% 100%,#3b5a8a 0%,#f4ba91 55%,#ffe7c9 100%);will-change:transform;box-shadow:0 -20px 120px rgba(244,186,145,.35)}
+.bands{position:absolute;display:grid;justify-items:center;gap:10px;will-change:transform}
+.bands i{display:block;height:12px;border-radius:50%;background:linear-gradient(90deg,transparent,#9cc0d4 20%,#e6f1f7 50%,#9cc0d4 80%,transparent)}
+.browser{position:absolute;z-index:2;width:min(620px,48vw);aspect-ratio:16/10;border-radius:14px;overflow:hidden;background:#0b1520;border:1px solid rgba(255,255,255,.12);box-shadow:0 50px 120px rgba(0,0,0,.7);will-change:transform}
+.browser .chrome{height:28px;display:flex;align-items:center;gap:6px;padding:0 12px;background:rgba(18,24,34,.92);border-bottom:1px solid rgba(255,255,255,.06)}
+.browser .chrome i{width:8px;height:8px;border-radius:50%;background:#2c3340}
+.browser img{display:block;width:100%;height:calc(100% - 28px);object-fit:cover;object-position:top;filter:saturate(1.05)}
+.browser .veil{position:absolute;inset:28px 0 0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(11,24,34,.35);display:grid;place-items:center}
+.browser .veil span{font:500 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--peach);border:1px solid rgba(244,186,145,.4);padding:9px 14px;border-radius:999px;background:rgba(11,24,34,.6)}
+
+
+/* each product scene tints the whole page in that product's own theme */
+#tone{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#tone>div{position:absolute;inset:0;opacity:0;will-change:opacity}
+#tone .ty{background:radial-gradient(60% 60% at 72% 50%,rgba(31,127,144,.55),transparent 70%),radial-gradient(50% 50% at 15% 85%,rgba(52,80,122,.5),transparent 70%),radial-gradient(40% 40% at 85% 15%,rgba(127,210,218,.22),transparent 70%),#071015}
+#tone .tl{background:radial-gradient(90% 55% at 60% 112%,rgba(244,186,145,.5),rgba(112,151,173,.2) 50%,transparent 75%),linear-gradient(180deg,#060d16,#0B1822)}
+.a{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);will-change:transform,opacity;pointer-events:none}
+.grp{position:absolute;left:50%;top:50%;width:0;height:0;z-index:2}
+.grp>.a{left:0;top:0}
+/* Yotes pieces (from the Yotes film) */
+.orbw{width:calc(var(--u)*20);height:calc(var(--u)*20)}
+.orb{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#e6fbfc 0%,#8fdde3 18%,#2f95a6 55%,#15515f 100%);box-shadow:0 0 calc(var(--u)*10) rgba(110,215,225,.45),inset 0 calc(var(--u)*-1.5) calc(var(--u)*4) rgba(0,30,40,.5)}
+.orb svg{width:38%;height:38%;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ring{position:absolute;inset:0;border-radius:50%;border:calc(var(--u)*.35) solid rgba(158,219,225,.6);animation:ring 2.4s cubic-bezier(.2,.6,.3,1) infinite}
+.ring:nth-child(2){animation-delay:.8s}.ring:nth-child(3){animation-delay:1.6s}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(1.9);opacity:0}}
+.ycap{font-size:calc(var(--u)*4.6);font-weight:500;text-align:center;line-height:1.3;color:rgba(255,255,255,.94);width:calc(var(--u)*86)}
+.ycap span{display:inline-block;margin:0 .14em;transition:opacity .25s,transform .25s,filter .25s}
+.ycap span.off{opacity:0;transform:translateY(.4em);filter:blur(4px)}
+.ycard{width:calc(var(--u)*76);border-radius:calc(var(--u)*5);padding:calc(var(--u)*3.6) calc(var(--u)*3.8);background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(234,243,245,.95));color:#172d34;box-shadow:0 calc(var(--u)*3) calc(var(--u)*9) rgba(0,0,0,.45);display:flex;align-items:center;gap:calc(var(--u)*3)}
+.ycard .ic{flex:none;width:calc(var(--u)*10);height:calc(var(--u)*10);border-radius:50%;background:#e0ebec;display:grid;place-items:center}
+.ycard .ic svg{width:52%;height:52%;stroke:#286b7d;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ycard .ct{flex:1;min-width:0}.ycard .t1{font-size:calc(var(--u)*4.1);font-weight:650;line-height:1.2}.ycard .t2{font-size:calc(var(--u)*3.2);color:#526970;margin-top:calc(var(--u)*.6)}
+.ypill{flex:none;font-size:calc(var(--u)*3);font-weight:650;color:#fff;background:#286b7d;border-radius:99px;padding:calc(var(--u)*1.5) calc(var(--u)*3);display:flex;align-items:center;gap:calc(var(--u)*1);transition:background .3s,transform .3s}
+.ypill svg{width:0;height:calc(var(--u)*3.4);stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:width .3s}
+.ypill.done{background:#1b5363;transform:scale(1.04)}.ypill.done svg{width:calc(var(--u)*3.4)}
+.ybar{width:calc(var(--u)*80);height:calc(var(--u)*13);border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;padding:0 calc(var(--u)*4.4);gap:calc(var(--u)*2.4);font-size:calc(var(--u)*3.8);color:rgba(255,255,255,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.ybar svg{width:calc(var(--u)*5);height:calc(var(--u)*5);stroke:#9edbe1;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ybar .ph{color:rgba(255,255,255,.5);white-space:nowrap}.ybar .tx{white-space:nowrap;overflow:hidden}
+.caret{display:inline-block;width:2px;height:1.05em;background:#9edbe1;vertical-align:-.15em;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+/* Lokah pieces */
+.greet{font-size:calc(var(--u)*7.4);font-weight:600;letter-spacing:-.04em;white-space:nowrap;min-width:calc(var(--u)*76)}
+.stat{width:calc(var(--u)*24);height:calc(var(--u)*18);border-radius:calc(var(--u)*3.2);padding:calc(var(--u)*2.4);background:rgba(16,32,48,.7);border:1px solid rgba(250,247,240,.12);display:flex;flex-direction:column;justify-content:space-between;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.stat.hot{background:linear-gradient(160deg,#fbe0c8,#f4ba91);color:#1b1410;border:0}
+.stat b{font-size:calc(var(--u)*6.4);font-weight:600;letter-spacing:-.04em;line-height:1}
+.stat span{font-size:calc(var(--u)*2.6);line-height:1.25;color:#c3ccd5}.stat.hot span{color:#4a3428}
+.need{width:calc(var(--u)*80);border-radius:calc(var(--u)*3.6);padding:calc(var(--u)*3) calc(var(--u)*3.4);background:linear-gradient(180deg,rgba(250,247,240,.97),rgba(238,233,224,.95));color:#14202b;display:flex;gap:calc(var(--u)*2.4);align-items:center;box-shadow:0 calc(var(--u)*3) calc(var(--u)*9) rgba(0,0,0,.45)}
+.need .tx{flex:1;min-width:0;font-size:calc(var(--u)*2.9);line-height:1.35}
+.need .tx small{display:block;font:500 calc(var(--u)*2.1)/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#8a7466;margin-bottom:calc(var(--u)*.9)}
+.need .yes{flex:none;font-size:calc(var(--u)*2.7);font-weight:600;border-radius:99px;padding:calc(var(--u)*1.4) calc(var(--u)*2.6);background:#0B1822;color:#FAF7F0;transition:background .3s,transform .3s;white-space:nowrap}
+.need .yes.done{background:#2f6a52;transform:scale(1.05)}
+@media (prefers-reduced-motion:reduce){.ring,.caret{animation:none}}
+
+/* next */
+.next{padding-block:120px;position:relative;z-index:3}
+.slot{border:1px dashed rgba(255,196,0,.35);border-radius:28px;padding:56px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:40px;align-items:center;background:radial-gradient(60% 120% at 0% 50%,rgba(255,196,0,.07),transparent)}
+.slot svg{width:54px;height:auto}
+.slot h2{font-size:clamp(32px,4vw,54px);line-height:1}
+.slot p{color:var(--muted);margin-top:10px;max-width:520px}
+
+/* rules */
+section{padding-block:140px;position:relative;z-index:3}
+.big{font-size:clamp(40px,6vw,92px);line-height:.98;letter-spacing:-.045em;max-width:1000px}
+.big em{color:var(--bolt)}
+.lede{color:var(--muted);font-size:19px;max-width:560px;margin-top:22px}
+.ways{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);margin-top:72px}
+.way{padding:28px 24px 8px 0;border-right:1px solid var(--line);margin-right:24px}
+.way:last-child{border-right:0;margin-right:0}
+.way h3{font-size:24px;margin:14px 0 10px}
+.way p{color:var(--muted);font-size:15.5px}
+.way .label{color:var(--bolt)}
+
+.co{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.rows{border-top:1px solid var(--line)}
+.rows a{display:flex;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--line);font-size:20px;font-weight:500;letter-spacing:-.01em}
+.rows a span{color:var(--muted);font:400 14px var(--mono)}
+.rows a:hover{color:var(--bolt)}
+
+.end{text-align:center;padding-block:200px;position:relative;overflow:hidden;z-index:3}
+.end:before{content:"";position:absolute;left:50%;top:50%;width:min(1000px,140vw);aspect-ratio:2/1;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,196,0,.14),transparent);opacity:var(--burst,0);transition:opacity .4s}
+.end .wrap{position:relative}
+.end h2{font-size:clamp(48px,8.4vw,128px);line-height:.94;letter-spacing:-.05em}
+.end h2 em{color:var(--bolt)}
+.end .btns{justify-content:center;margin-top:40px}
+
+footer{border-top:1px solid var(--line);padding-block:48px 64px;color:var(--muted);font-size:14.5px;position:relative;z-index:3;background:var(--ink)}
+footer .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px}
+footer img{height:36px;width:auto}
+footer .cols{display:flex;flex-wrap:wrap;gap:56px}
+footer .cols div{display:grid;gap:8px;align-content:start}
+footer b{color:var(--fg);font-weight:500}
+footer a:hover{color:var(--fg)}
+
+@media (max-width:860px){
+  .nav ul{display:none}.nav .nbar{justify-content:space-between}
+  .pframe{grid-template-columns:minmax(0,1fr);gap:0;padding-top:110px;align-content:start;height:100%}
+  .pnum{top:76px}
+  .ptext .logo{height:34px;margin-bottom:14px}
+  .ptext p{margin:14px 0 18px}
+  .ptext .meta{margin-bottom:16px}
+  .pvis{height:44vh}
+  .phone{width:min(180px,44vw)}
+  .browser{width:86vw}
+  .sun{width:56vw}
+  .ways{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .way:nth-child(2){border-right:0;margin-right:0}
+  .co,.slot{grid-template-columns:minmax(0,1fr)}
+  .slot{padding:32px}
+  section,.next{padding-block:96px}
+}
+@media (prefers-reduced-motion:reduce){
+  .s-strike,.s-prod{height:auto}
+  .stage{position:relative;height:auto;min-height:100svh}
+  .half,.flash,#crack,.scrollcue,#trail{display:none}
+}
+
+
+/* rendered backdrop (assets/photo.js): the Lokah sunrise world */
+.ph{position:absolute;inset:0;overflow:hidden;background:#0b1822}
+.ph .fr{position:absolute;will-change:transform,filter}
+.ph img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ph .glow{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,240,215,.8),rgba(255,200,150,.3) 42%,transparent 72%);mix-blend-mode:screen;animation:ph-breathe 7s ease-in-out infinite}
+.ph .mist{position:absolute;left:-20%;width:140%;height:14%;transform:translateY(-50%);background:radial-gradient(45% 50% at 28% 50%,rgba(255,230,215,.35),transparent 70%),radial-gradient(38% 50% at 74% 50%,rgba(255,230,215,.3),transparent 70%);filter:blur(12px);animation:ph-drift 40s ease-in-out infinite alternate;pointer-events:none}
+.ph .m2{height:9%;opacity:.7;animation-duration:27s;animation-direction:alternate-reverse}
+.ph .shim{position:absolute;left:0;right:0;bottom:0;background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(255,255,255,.2) 13px 14px);background-size:100% 56px;mix-blend-mode:soft-light;-webkit-mask:linear-gradient(180deg,transparent,#000 35%);mask:linear-gradient(180deg,transparent,#000 35%);animation:ph-shim 5s linear infinite;opacity:.55}
+.ph .flash{position:absolute;inset:0;background:#fff4e6;opacity:0;pointer-events:none;z-index:5}
+@keyframes ph-shim{to{background-position:0 56px}}
+@keyframes ph-drift{from{transform:translate(-5%,-50%)}to{transform:translate(5%,-50%)}}
+@keyframes ph-breathe{50%{opacity:.7;transform:translate(-50%,-50%) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.ph *{animation:none!important}}
+#tone .tl{background:#0b1822}
+#tone .tl::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,13,22,.78),rgba(6,13,22,.35) 45%,transparent 70%),linear-gradient(0deg,rgba(6,13,22,.5),transparent 30%)}
+@media (max-width:860px){#tone .tl::after{background:linear-gradient(180deg,rgba(6,13,22,.75),rgba(6,13,22,.2) 55%,rgba(6,13,22,.45))}}
+#lSun,#lBands{display:none}
+#tone .ty{background:#071015}
+#tone .ty::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,10,13,.8),rgba(4,10,13,.35) 45%,transparent 70%),linear-gradient(0deg,rgba(4,10,13,.45),transparent 30%)}
+@media (max-width:860px){#tone .ty::after{background:linear-gradient(180deg,rgba(4,10,13,.78),rgba(4,10,13,.2) 55%,rgba(4,10,13,.5))}}
+/* thunder moments: what a strike leaves behind */
+.zapped{animation:zapped 1.4s ease-out}
+@keyframes zapped{0%{color:#fff8dc;text-shadow:0 0 18px #ffc400,0 0 40px rgba(255,196,0,.7);filter:drop-shadow(0 0 14px #ffc400)}100%{text-shadow:none;filter:none}}
+.orbw.charged .orb{animation:charged 1.6s ease-out}
+@keyframes charged{0%{filter:brightness(1.8) saturate(1.3);box-shadow:0 0 calc(var(--u)*22) rgba(255,214,90,.8),0 0 calc(var(--u)*10) rgba(110,215,225,.9)}100%{filter:none}}
+.way{position:relative;transition:color .4s}
+.way::before{content:"";position:absolute;left:0;right:24px;top:-1px;height:2px;background:linear-gradient(90deg,#ffe27a,#ffc400);box-shadow:0 0 12px #ffc400;transform:scaleX(0);transform-origin:left;transition:transform .45s ease-out}
+.way.on::before{transform:scaleX(1)}
+.way.on .label{color:var(--bolt)}
+/* round 7 nav: one floating glass bar, so the page never shows through behind the logo and links */
+.nav{padding-block:12px}
+.nav .nbar{max-width:1180px;padding:8px 8px 8px 18px;border-radius:16px;background:rgba(10,12,16,.62);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nav ul{border:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.nav a img{display:block;flex:none;max-width:none}
+</style>
+
+<nav class="nav gut" aria-label="Main">
+  <div class="wrap nbar">
+    <a href="#top"><img src="assets/logo-white.png" alt="Thunder AI Labs" width="80" height="26"></a>
+    <ul>
+      <li><a href="yotes.html">Yotes</a></li>
+      <li><a href="lokah.html">Lokah</a></li>
+      <li><a href="#how">How we build</a></li>
+      <li><a href="#company">Company</a></li>
+    </ul>
+    <a class="cta" href="#yotes">Products</a>
+  </div>
+</nav>
+
+<div id="tone" aria-hidden="true"><div class="ty"></div><div class="tl"></div></div>
+<canvas id="trail" aria-hidden="true"></canvas>
+
+<!-- 1 · the strike -->
+<div class="scene s-strike" id="top">
+  <div class="stage">
+    <div class="glow"></div>
+    <div class="after"><div>
+      <h1>Ideas strike.<br><em>We ship them.</em></h1>
+      <p class="sub">Thunder AI Labs builds AI products for everyday life, one idea at a time.</p>
+    </div></div>
+    <div class="half l"><div class="mark"><img src="assets/logo-white.png" alt="" width="560" height="183"><p class="label">AI for everyday life</p></div></div>
+    <div class="half r"><div class="mark"><img src="assets/logo-white.png" alt="" width="560" height="183"><p class="label">AI for everyday life</p></div></div>
+    <svg id="crack" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline id="bolt" points="56,0 46,47 55,47 44,100" fill="none" stroke="#ffe27a" stroke-width=".35" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 6px #ffc400)"/></svg>
+    <div class="flash"></div>
+    <div class="scrollcue"><span class="label">Scroll</span><i></i></div>
+  </div>
+</div>
+
+<!-- intro, words light up as the bolt passes -->
+<div class="intro gut" data-bolt="0.44" id="intro">
+  <div class="wrap">
+    <span class="label">The lab</span>
+    <p class="big" style="margin-top:22px" id="words">We are a small lab that loves making things. We find an everyday problem, build an AI product for it, and ship it. Then we start the next one.</p>
+    <div class="count">
+      <div><b>2</b><span class="label">Products</span></div>
+      <div><b>1</b><span class="label">Live on the App Store</span></div>
+      <div><b>∞</b><span class="label">Ideas in the lab</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 · Yotes, alone -->
+<div class="scene s-prod s-yotes" id="yotes" data-bolt="0.97">
+  <div class="stage">
+    <div class="pframe">
+      <div class="pnum"><span class="label">Product 01</span><span class="bar"><i></i></span></div>
+      <div class="ptext">
+        <img class="logo" src="assets/yotes-wordmark.png" alt="Yotes" width="90" height="46">
+        <h2>Just say it.<br><em>Yotes remembers.</em></h2>
+        <p>Notes, reminders and Spaces you can talk to, in English or Tamil. Free on iPhone, with no account needed.</p>
+        <div class="meta"><span class="chip live">Live on iPhone</span><span class="chip">Voice</span><span class="chip">Camera</span><span class="chip">Family</span></div>
+        <div class="btns"><a class="btn p" href="https://apps.apple.com/app/id6756503509" target="_blank" rel="noopener"> Download on the App Store</a><a class="btn g" href="yotes.html">Explore Yotes →</a></div>
+      </div>
+      <div class="pvis" id="yV"><div class="aura"></div>
+        <div class="grp" id="yG">
+          <div class="a orbw" id="yOrb"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="orb"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></div></div>
+          <div class="a ycap" id="yCap"><span class="off">Remind</span><span class="off">me</span><span class="off">to</span><span class="off">call</span><span class="off">Amma</span><span class="off">at</span><span class="off">6</span></div>
+          <div class="a ycard" id="yCard"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div><div class="ct"><div class="t1">Call Amma</div><div class="t2">Today · 6:00 pm</div></div><div class="ypill" id="yPill"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Confirm</span></div></div>
+          <div class="a ybar" id="yBar"><svg viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg><span class="tx" id="yTx"></span><span class="caret"></span><span class="ph" id="yPh">Ask Yotes…</span></div>
+        </div>
+      </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 · Lokah, alone -->
+<div class="scene s-prod s-lokah" id="lokah" data-bolt="0.03">
+  <div class="stage">
+    <div class="pframe">
+      <div class="pnum"><span class="label">Product 02</span><span class="bar"><i></i></span></div>
+      <div class="ptext">
+        <img class="logo" src="assets/lokah-horizon_mark_512px.png" alt="Lokah" width="46" height="46">
+        <h2>Your world,<br><em>remembered.</em></h2>
+        <p>A personal agent you own. It remembers your life, briefs you each morning, and has a crew that works for you, asking before it acts.</p>
+        <div class="meta"><span class="chip soon">Coming soon</span><span class="chip">Web</span><span class="chip">Private by design</span></div>
+        <div class="btns"><a class="btn p" href="lokah.html">Join the waitlist</a><a class="btn g" href="lokah.html">Explore Lokah →</a></div>
+      </div>
+      <div class="pvis" id="lV"><div class="aura"></div>
+        <div class="sun" id="lSun"></div>
+        <div class="bands" id="lBands"><i style="width:min(460px,48vw)"></i><i style="width:min(380px,40vw)"></i><i style="width:min(280px,30vw)"></i><i style="width:min(180px,20vw)"></i></div>
+        <div class="grp" id="lG">
+          <div class="a greet" id="lGreet"><span id="lGt"></span><span class="caret" style="background:#f4ba91"></span></div>
+          <div class="a stat hot" id="lT1"><b data-n="5">0</b><span>new for you</span></div>
+          <div class="a stat" id="lT2"><b data-n="2">0</b><span>emails need a reply</span></div>
+          <div class="a stat" id="lT3"><b data-n="1">0</b><span>guess to confirm</span></div>
+          <div class="a need" id="lNeed"><div class="tx"><small>Needs you</small>Your flight moved to 7:40 am. Move the airport cab to 5:30?</div><span class="yes" id="lYes">Approve</span></div>
+        </div>
+      </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 · next slot -->
+<div class="next gut" data-bolt="0.5" id="next">
+  <div class="wrap slot">
+    <svg viewBox="0 0 60 140" aria-hidden="true"><path d="M38 0 6 78h22L14 140 56 52H33L50 0Z" fill="#ffc400"/></svg>
+    <div><span class="label">Product 03</span><h2 style="margin-top:10px">Something new <em>is striking.</em></h2><p>The next product is being built in the lab right now.</p></div>
+    <a class="btn g" href="#company">Follow the lab</a>
+  </div>
+</div>
+
+<section id="how" class="gut" data-bolt="0.9">
+  <div class="wrap">
+    <span class="label">How we build</span>
+    <h2 class="big" style="margin-top:18px">Every product is different. <em>The standard isn't.</em></h2>
+    <p class="lede">We build many kinds of AI products. Each one ships only when it meets the same four rules.</p>
+    <div class="ways">
+      <div class="way"><span class="label">Rule 1</span><h3>Yours</h3><p>Your data stays yours. Private by default, never sold, never mixed with anyone else's.</p></div>
+      <div class="way"><span class="label">Rule 2</span><h3>Honest</h3><p>Clear about what it knows and what it guesses. No invented facts.</p></div>
+      <div class="way"><span class="label">Rule 3</span><h3>Asks first</h3><p>Nothing important happens until you tap Confirm or Approve.</p></div>
+      <div class="way"><span class="label">Rule 4</span><h3>Fast and fair</h3><p>The smallest model that does the job well, so it feels instant and stays affordable.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="company" class="gut" style="padding-top:0" data-bolt="0.08">
+  <div class="wrap co">
+    <div><span class="label">Company</span><h2 class="big" style="margin-top:18px;font-size:clamp(36px,4.6vw,64px)">A small lab that <em>ships.</em></h2><p class="lede">We'd rather put one useful product in your hands than talk about ten. Placeholder for the founding story.</p></div>
+    <div class="rows">
+      <a href="#company">About us<span>Story</span></a>
+      <a href="#company">Careers<span>Join us</span></a>
+      <a href="#company">Lab notes<span>Writing</span></a>
+      <a href="#company">Contact<span>Email</span></a>
+    </div>
+  </div>
+</section>
+
+<div class="end gut" id="end" data-bolt="0.5"><div class="wrap"><h2>Where ideas <em>strike.</em></h2><div class="btns"><a class="btn p" href="yotes.html">Get Yotes</a><a class="btn g" href="lokah.html">Join the Lokah waitlist</a></div></div></div>
+
+<footer class="gut">
+  <div class="wrap row">
+    <div><img src="assets/logo-white.png" alt="Thunder AI Labs" width="110" height="36"><p style="margin-top:14px">© 2026 Thunder AI Labs</p></div>
+    <div class="cols">
+      <div><b>Products</b><a href="yotes.html">Yotes</a><a href="lokah.html">Lokah</a></div>
+      <div><b>Company</b><a href="#company">About</a><a href="#company">Careers</a><a href="#company">Lab notes</a></div>
+      <div><b>Help</b><a href="yotes/support/">Yotes support</a><a href="yotes/privacy/">Privacy</a><a href="#company">Terms</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/fx.js"></script>
+<script src="assets/photo.js"></script>
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (p, a, b) => clamp((p - a) / (b - a));
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+const progress = el => { const r = el.getBoundingClientRect(); return clamp(-r.top / (r.height - innerHeight)); };
+const $ = s => document.querySelector(s);
+
+/* intro words */
+const words = $('#words'); words.innerHTML = words.textContent.split(' ').map(w => `<span style="color:inherit">${w}</span>`).join(' ');
+const wordEls = [...words.children];
+
+/* Playheads: each moment plays by itself once it reaches the screen. Scrolling can push it ahead, never hold it back.
+   Scroll back above it and it resets, so it plays again next time. */
+const heads = new Map();
+function play(el, dur, at = .5, delay = 0){
+  let h = heads.get(el); if (!h){ h = {on: false, t0: 0}; heads.set(el, h); }
+  const r = el.getBoundingClientRect(), now = performance.now();
+  if (r.top > innerHeight) h.on = false;
+  if (!h.on && r.top < innerHeight * at){ h.on = true; h.t0 = now + delay; }
+  if (reduce) return 1;
+  const t = h.on ? clamp((now - h.t0) / dur) : 0;
+  return el.classList.contains('scene') ? Math.max(t, progress(el)) : t;
+}
+
+/* Thunder moments. No line runs down the page any more: lightning strikes where something happens.
+   It cracks the opening, jumps between the lab's numbers, powers up the Yotes orb, breaks over Lokah's horizon,
+   keeps striking the empty slot where the next product will appear, links the four rules, and lands on "strike." */
+const zc = $('#trail'), zx = zc.getContext('2d');
+let dpr = 1;
+function sizeZ(){ dpr = Math.min(2, devicePixelRatio || 1); zc.width = innerWidth * dpr; zc.height = innerHeight * dpr; }
+const zaps = [], rings = [], sparks = [];
+let skyFlash = 0;
+function jag(a, b, rough){
+  let pts = [a, b], d = Math.hypot(b[0] - a[0], b[1] - a[1]) * rough;
+  for (let k = 0; k < 6; k++){
+    const np = [pts[0]];
+    for (let i = 0; i < pts.length - 1; i++){
+      const p = pts[i], q = pts[i + 1], dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy) || 1, o = (Math.random() - .5) * d;
+      np.push([(p[0] + q[0]) / 2 - dy / l * o, (p[1] + q[1]) / 2 + dx / l * o], q);
+    }
+    pts = np; d *= .52;
+  }
+  return pts;
+}
+const box = (el, fx = .5, fy = .5) => () => { const r = el.getBoundingClientRect(); return [r.left + r.width * fx, r.top + r.height * fy]; };
+const sky = (fx, dx = 0) => () => [innerWidth * fx + dx, -20];
+function zap(from, to, o = {}){ zaps.push({from, to, o, t: performance.now() + (o.delay || 0), pts: null, br: [], k: -1, hit: false}); }
+function drawZ(now){
+  zx.setTransform(dpr, 0, 0, dpr, 0, 0); zx.clearRect(0, 0, innerWidth, innerHeight);
+  if (skyFlash > .01){ zx.fillStyle = `rgba(255,236,170,${(skyFlash * .14).toFixed(3)})`; zx.fillRect(0, 0, innerWidth, innerHeight); skyFlash *= .86; }
+  zx.lineCap = 'round'; zx.lineJoin = 'round';
+  for (let i = zaps.length - 1; i >= 0; i--){
+    const z = zaps[i], age = now - z.t, life = z.o.dur || 620;
+    if (age < 0) continue;
+    if (age > life){ zaps.splice(i, 1); continue; }
+    const k = Math.floor(age / 55);
+    if (k !== z.k){ z.k = k; const a = z.from(), b = z.to(); z.pts = jag(a, b, z.o.rough || .2); z.br = [];
+      for (let n = 0; n < (z.o.branches ?? 3); n++){ const j = 8 + Math.floor(Math.random() * (z.pts.length - 16)), p = z.pts[j], ang = Math.atan2(b[1] - a[1], b[0] - a[0]) + (Math.random() < .5 ? -1 : 1) * (.4 + Math.random() * .7), L = 30 + Math.random() * (z.o.big ? 120 : 60);
+        z.br.push(jag(p, [p[0] + Math.cos(ang) * L, p[1] + Math.sin(ang) * L], .35)); } }
+    const grow = clamp(age / 70), f = (age < 70 ? 1 : [1, .3, 1, .75, .25, .9, .4][k % 7]) * Math.pow(1 - age / life, .6) * (z.o.alpha || 1);
+    const n = Math.max(2, Math.round(z.pts.length * grow)), w = z.o.big ? 1.4 : 1;
+    const stroke = (pts, lw, col, blur) => { zx.save(); if (blur){ zx.shadowColor = '#ffc400'; zx.shadowBlur = blur; } zx.strokeStyle = col; zx.lineWidth = lw; zx.beginPath(); pts.forEach((p, j) => j ? zx.lineTo(p[0], p[1]) : zx.moveTo(p[0], p[1])); zx.stroke(); zx.restore(); };
+    const main = z.pts.slice(0, n);
+    stroke(main, 7 * w, `rgba(255,196,0,${(.35 * f).toFixed(3)})`, 26);
+    stroke(main, 2 * w, `rgba(255,248,220,${f.toFixed(3)})`, 8);
+    if (grow >= 1) z.br.forEach(b2 => stroke(b2, 1 * w, `rgba(255,236,170,${(.7 * f).toFixed(3)})`, 8));
+    if (grow >= 1 && !z.hit){ z.hit = true; const [x, y] = z.pts[z.pts.length - 1];
+      rings.push({x, y, t: now, big: z.o.big}); if (z.o.big) skyFlash = 1;
+      for (let s2 = 0; s2 < (z.o.big ? 20 : 10); s2++){ const an = Math.random() * Math.PI * 2, v = .1 + Math.random() * (z.o.big ? .4 : .22); sparks.push({x, y, vx: Math.cos(an) * v, vy: Math.sin(an) * v, t: now, life: 400 + Math.random() * 500}); }
+      z.o.onHit && z.o.onHit(); }
+  }
+  for (let i = rings.length - 1; i >= 0; i--){ const r = rings[i], t = (now - r.t) / (r.big ? 1000 : 700); if (t >= 1){ rings.splice(i, 1); continue; }
+    zx.strokeStyle = `rgba(255,214,90,${((1 - t) * .7).toFixed(3)})`; zx.lineWidth = 2 * (1 - t) + .4; zx.beginPath(); zx.arc(r.x, r.y, (r.big ? 24 : 12) + ease(t) * (r.big ? 200 : 90), 0, Math.PI * 2); zx.stroke(); }
+  for (let i = sparks.length - 1; i >= 0; i--){ const p = sparks[i], t = (now - p.t) / p.life; if (t >= 1){ sparks.splice(i, 1); continue; }
+    const a2 = now - p.t, x = p.x + p.vx * a2, y = p.y + p.vy * a2 + a2 * a2 * .00012;
+    zx.strokeStyle = `rgba(255,230,150,${(1 - t).toFixed(3)})`; zx.lineWidth = 1.3; zx.beginPath(); zx.moveTo(x, y); zx.lineTo(x - p.vx * 16, y - p.vy * 16); zx.stroke(); }
+}
+const charge = (el, cls = 'zapped', ms = 1400) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), ms); };
+
+/* each moment fires once when its spot reaches the screen, and re-arms when you scroll back above it */
+const moments = [
+  {el: $('#intro .count'), at: .8, fire(){ const bs = [...document.querySelectorAll('#intro .count b')];
+    zap(sky(.2), box(bs[0], .5, .2), {onHit: () => charge(bs[0])});
+    zap(box(bs[0], .9, .5), box(bs[1], .1, .5), {delay: 380, branches: 1, rough: .25, onHit: () => charge(bs[1])});
+    zap(box(bs[1], .9, .5), box(bs[2], .1, .5), {delay: 700, branches: 1, rough: .25, onHit: () => charge(bs[2])}); }},
+  {el: $('#yotes'), at: .45, fire(){ zap(() => [box($('#yOrb'))()[0] + 60, -20], box($('#yOrb')), {big: true, delay: 250, onHit: () => { charge($('#yOrb'), 'charged', 1600); $('#yotes').classList.add('lit'); }}); }},
+  {el: $('#lokah'), at: .45, fire(){ zap(() => { const p = LW.pt(LW.v.sun); return [p.x - 80, -20]; }, () => { const p = LW.pt(LW.v.sun); return [p.x, p.y]; }, {big: true, delay: 250, onHit: () => { boom = performance.now(); $('#lokah').classList.add('lit'); }}); }},
+  {el: $('.next .slot'), at: .75, every: [2600, 5200], fire(){ const s = $('.next .slot svg'); zap(box($('.next .slot'), .02 + Math.random() * .2, 0), box(s, .5, .3), {branches: 2, dur: 480, onHit: () => charge(s)}); }},
+  {el: $('#how .ways'), at: .75, fire(){ const ws = [...document.querySelectorAll('#how .way')];
+    zap(sky(.15), box(ws[0], .1, 0), {onHit: () => charge(ws[0], 'on', 2600)});
+    for (let i = 1; i < ws.length; i++) zap(box(ws[i - 1], .4, .08), box(ws[i], .08, .08), {delay: 300 * i, branches: 1, rough: .18, onHit: () => charge(ws[i], 'on', 2600 - 300 * i)}); }},
+  {el: $('#end'), at: .6, every: [3800, 7000], first(){ const em = $('#end h2 em'); zap(sky(.62, 40), box(em, .5, .1), {big: true, delay: 200, onHit: () => { charge(em, 'zapped', 1600); $('#end').classList.add('lit'); }}); },
+    fire(){ const x = .1 + Math.random() * .8; zap(sky(x), () => [innerWidth * (x + (Math.random() - .5) * .2), innerHeight * (.15 + Math.random() * .25)], {alpha: .45, branches: 2, dur: 420}); }},
+];
+function tickMoments(now){
+  for (const m of moments){
+    const r = m.el.getBoundingClientRect();
+    if (r.top > innerHeight){ m.armed = true; m.next = 0; continue; }
+    if (r.bottom < 0) continue;
+    if (m.armed !== false && r.top < innerHeight * m.at){ m.armed = false; (m.first || m.fire)(); m.next = now + 1800 + (m.every ? m.every[0] : 0); }
+    else if (m.every && m.next && now > m.next && r.top < innerHeight){ m.fire(); m.next = now + m.every[0] + Math.random() * (m.every[1] - m.every[0]); }
+  }
+}
+let boom = 0;
+const DAWN={land:{src:'assets/bg-lokah.jpg',ar:1536/864,sun:[51,55],hz:66.5,glow:42},port:{src:'assets/bg-lokah-p.jpg',ar:1024/1536,sun:[52,54.5],hz:59,glow:60}};
+const YW=Photo.build($('#tone .ty'),{over:1.25,land:{src:'assets/bg-yotes-night.jpg',ar:1536/864,sun:[70.8,58.2],hz:58.7,glow:16,fx:.7},port:{src:'assets/bg-yotes-night-p.jpg',ar:1024/1536,sun:[57.8,60.5],hz:61,glow:24}});
+const LW=Photo.build($('#tone .tl'),{...DAWN,over:1.25,land:{...DAWN.land,fx:.64}});
+
+const strike = $('.s-strike');
+const L = strike.querySelector('.half.l'), R = strike.querySelector('.half.r');
+const bolt = $('#bolt'), flash = strike.querySelector('.flash'), cue = strike.querySelector('.scrollcue'), after = strike.querySelector('.after');
+bolt.style.strokeDasharray = 200; bolt.style.strokeDashoffset = 200;
+
+const yK = { orb: FX.K([[0,{o:0,y:10,s:.6}],[.1,{o:1,y:-26,s:1}],[1,{o:1,y:-26}]]), cap: FX.K([[.08,{o:0,y:-6}],[.12,{o:1,y:-8}],[.32,{o:1,y:-8}],[.36,{o:0,y:-12,b:1}]]),
+  card: FX.K([[.32,{o:0,y:12,s:.9,b:1.5}],[.4,{o:1,y:-4,s:1,b:0}],[1,{o:1,y:-4}]]), bar: FX.K([[.52,{o:0,y:30,s:.94}],[.6,{o:1,y:20,s:1}],[1,{o:1,y:20}]]) };
+const lK = { greet: FX.K([[.36,{o:0,y:-22}],[.38,{o:1,y:-24}],[1,{o:1,y:-24}]]),
+  t1: FX.K([[.46,{o:0,x:-26,y:4,s:.85,b:1.5}],[.53,{o:1,x:-26,y:-3,s:1,b:0}],[1,{o:1,x:-26,y:-3}]]), t2: FX.K([[.5,{o:0,x:0,y:4,s:.85,b:1.5}],[.57,{o:1,x:0,y:-3,s:1,b:0}],[1,{o:1,x:0,y:-3}]]), t3: FX.K([[.54,{o:0,x:26,y:4,s:.85,b:1.5}],[.61,{o:1,x:26,y:-3,s:1,b:0}],[1,{o:1,x:26,y:-3}]]),
+  need: FX.K([[.66,{o:0,y:26,s:.94,b:1.5}],[.73,{o:1,y:18,s:1,b:0}],[1,{o:1,y:18}]]) };
+function frame(now){
+  const narrow = innerWidth < 860;
+  /* opening: plays by itself. The logo holds, the bolt splits it open, and the line appears */
+  { const p = play(strike, 3200, 1, 700);
+    bolt.style.strokeDashoffset = 200 * (1 - ease(seg(p, .04, .28)));
+    flash.style.opacity = clamp(seg(p, .26, .32) - seg(p, .32, .46)) * .3;
+    const open = ease(seg(p, .32, .7));
+    L.style.transform = `translateX(${-open*62}%) rotate(${-open*3}deg)`;
+    R.style.transform = `translateX(${open*62}%) rotate(${open*3}deg)`;
+    bolt.style.opacity = 1 - seg(p, .36, .5);
+    const a = seg(p, .4, .75); after.style.opacity = a; after.style.transform = `scale(${.92 + a*.08})`;
+    cue.style.opacity = seg(p, .75, .9) * (1 - seg(progress(strike), 0, .2)); }
+
+  /* intro words light up on their own once the paragraph is on screen */
+  { const t = play($('#intro'), 2600, .7);
+    wordEls.forEach((w,i) => w.style.color = i / wordEls.length < t ? 'var(--fg)' : ''); }
+
+  /* product scenes, built from each product's own pieces; the page takes on that product's colours */
+  const tone = el => { const r = el.getBoundingClientRect(); return ease(clamp(Math.min((innerHeight - r.top) / innerHeight, r.bottom / innerHeight) * 1.4)); };
+  $('#tone .ty').style.opacity = tone($('#yotes')); $('#tone .tl').style.opacity = tone($('#lokah'));
+  { const s = $('#yotes'), p = play(s, 8000, .45, 700), v = $('#yV'), u = FX.U();
+    YW.fit(); const glow = $('#yOrb').classList.contains('charged') ? 1 : 0; YW.fr.style.transform = `scale(${1.08 - ease(seg(p, 0, .3)) * .05})`; YW.fr.style.filter = `brightness(${.6 + ease(seg(p, 0, .25)) * .4 + glow * .15})`; YW.glow.style.opacity = .4 + ease(seg(p, 0, .2)) * .6;
+    FX.group($('#yG'), { cx: 0, cy: 0, k: Math.min(.82, v.clientWidth / (86 * u), v.clientHeight / (82 * u)) });
+    FX.put($('#yOrb'), FX.at(yK.orb, p)); FX.put($('#yCap'), FX.at(yK.cap, p)); FX.put($('#yCard'), FX.at(yK.card, p)); FX.put($('#yBar'), FX.at(yK.bar, p));
+    [...$('#yCap').children].forEach((w, i, a) => w.classList.toggle('off', i >= Math.round(a.length * seg(p, .1, .3))));
+    $('#yPill').classList.toggle('done', p > .5);
+    const t = seg(p, .62, .86); FX.type($('#yTx'), 'What’s left to book for Goa?', t); $('#yPh').style.display = t > 0 ? 'none' : '';
+    s.querySelector('.pnum i').style.transform = `scaleX(${p})`;
+    const rise = ease(seg(p, 0, .12)); s.querySelector('.ptext').style.transform = `translateY(${(1-rise)*40}px)`; s.querySelector('.ptext').style.opacity = .25 + rise*.75; }
+
+  { const s = $('#lokah'), p = play(s, 8000, .45, 900), v = $('#lV'), u = FX.U();
+    const sunUp = ease(seg(p, 0, .35)), flare = boom ? Math.max(0, 1 - (now - boom) / 1600) : 0;
+    LW.fit(); LW.fr.style.transform = `translateY(${(1-sunUp)*7}%) scale(${1.1 - sunUp*.07})`; LW.fr.style.filter = `brightness(${.42 + sunUp*.58 + flare*.35}) saturate(${.75 + sunUp*.25})`; LW.glow.style.opacity = .2 + sunUp*.9 + flare;
+    FX.group($('#lG'), { cx: 0, cy: 0, k: Math.min(.82, v.clientWidth / (86 * u), v.clientHeight / (72 * u)) });
+    FX.put($('#lGreet'), FX.at(lK.greet, p)); FX.type($('#lGt'), 'Good morning, Maya.', seg(p, .38, .5));
+    [1,2,3].forEach(i => { const el = $('#lT'+i); FX.put(el, FX.at(lK['t'+i], p)); const b = el.querySelector('b'); b.textContent = Math.round(+b.dataset.n * ease(seg(p, .5 + i*.04, .62 + i*.04))); });
+    FX.put($('#lNeed'), FX.at(lK.need, p)); const y = $('#lYes'); y.classList.toggle('done', p > .86); y.textContent = p > .86 ? 'Done ✓' : 'Approve';
+    s.querySelector('.pnum i').style.transform = `scaleX(${p})`;
+    const rise = ease(seg(p, 0, .12)); s.querySelector('.ptext').style.transform = `translateY(${(1-rise)*40}px)`; s.querySelector('.ptext').style.opacity = .25 + rise*.75; }
+
+  $('#end').style.setProperty('--burst', $('#end').classList.contains('lit') ? 1 : 0);
+}
+
+sizeZ(); addEventListener('resize', sizeZ);
+if (reduce){
+  frame(performance.now()); addEventListener('resize', () => frame(performance.now())); addEventListener('scroll', () => frame(performance.now()), {passive: true});
+  after.style.opacity = 1; wordEls.forEach(w => w.style.color = 'var(--fg)');
+} else {
+  const loop = now => { frame(now); tickMoments(now); drawZ(now); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+</script>

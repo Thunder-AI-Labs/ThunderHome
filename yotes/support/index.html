@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Yotes support</title>
+<meta name="description" content="Help with Yotes: contact us and common questions.">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>:root{
+  --u:1vmin;
+  --night:#071015; --ink-2:#0c1a20; --fg:#eef6f7; --muted:#8fa6ab; --line:rgba(238,246,247,.1);
+  --aqua:#9edbe1; --halo:#8acbd0; --teal:#286b7d; --teal-2:#3a8799; --paper:#edf3f4; --text:#172d34; --sub:#526970;
+  --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif; --serif:'Instrument Serif',ui-serif,Georgia,serif; --mono:'Geist Mono',ui-monospace,Menlo,monospace; --tamil:'Noto Sans Tamil','Geist',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--fg);font:400 17px/1.6 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--night)}
+img{max-width:100%}
+h1,h2,h3,p{margin:0}h1,h2,h3{font-weight:600;letter-spacing:-.035em;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:6px}
+em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--aqua)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1160px;margin:0 auto}
+.label{font:500 12px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;padding-block:16px}
+.nav .nbar{display:flex;align-items:center;gap:16px}
+.nav .home{display:flex;align-items:center;gap:12px}
+.nav .home img{height:22px;width:auto;flex:none;max-width:none}
+.nav .home .wm{height:30px}
+.nav .sep{width:1px;height:20px;background:var(--line)}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 auto;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(10,24,30,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nav li a{display:block;padding:7px 14px;border-radius:9px;font-size:14px;color:#c3d3d6}
+.nav li a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav .cta{font-size:14px;font-weight:500;padding:9px 14px;border-radius:10px;background:var(--fg);color:#0d2a31}
+details{border-top:1px solid var(--line);padding:20px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-size:19px;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::after{content:"+";color:var(--muted)}details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:10px;max-width:560px}
+.todo{background:rgba(255,196,0,.12);color:#ffe27a;border-radius:6px;padding:1px 6px}
+.policy{max-width:760px}
+.policy h3{font-size:22px;margin:40px 0 10px}
+.policy p,.policy li{color:#b9cacd}
+.policy ul{padding-left:20px}
+.policy li{margin:6px 0}
+footer{border-top:1px solid var(--line);padding-block:44px 60px;color:var(--muted);font-size:14.5px;background:var(--night)}
+footer .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:center}
+footer img{height:30px;width:auto}
+.nav{padding-block:12px}
+.nav .nbar{max-width:1180px;padding:8px 8px 8px 18px;border-radius:16px;background:rgba(10,12,16,.62);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nav ul{border:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.nav a img{display:block;flex:none;max-width:none}
+.mail{font-size:22px;margin:8px 0}.mail a{color:var(--aqua);border-bottom:1px solid rgba(158,219,225,.4)}.policy a{color:var(--aqua)}
+.nav{position:sticky} main{padding:120px 0 80px} h1{font-size:clamp(38px,5vw,64px);line-height:1.05;margin-top:16px}
+body{background:radial-gradient(ellipse at 70% -10%,rgba(58,135,153,.35),transparent 60%),var(--night)}
+.nav .back{margin-left:auto;font-size:14px;color:#c3d3d6} .grid{display:grid;gap:48px;grid-template-columns:1fr 1.3fr;margin-top:40px}
+@media (max-width:760px){.grid{grid-template-columns:1fr} main{padding-top:96px}}
+</style></head><body>
+<nav class="nav gut" aria-label="Yotes"><div class="wrap nbar">
+<a class="home" href="../../" aria-label="Thunder AI Labs home"><img src="../../assets/logo-white.png" alt="Thunder AI Labs" width="67" height="22"><span class="sep"></span><img class="wm" src="../../assets/yotes-wordmark.png" alt="Yotes" width="59" height="30"></a>
+<a class="back" href="../../yotes.html">About Yotes</a></div></nav>
+<main class="gut"><div class="wrap"><span class="label">Yotes support</span><h1>We're here <em>to help.</em></h1>
+<div class="grid"><div><span class="label">Email us</span><p class="mail"><span class="todo">contact email to be added</span></p><p style="color:var(--muted);font-size:15px">We usually reply within two working days. Please tell us your phone model and what you were doing when the problem happened.</p>
+<p style="color:var(--muted);font-size:15px;margin-top:24px">Read how we handle your data in the <a href="../privacy/" style="color:var(--aqua)">privacy policy</a>.</p></div>
+<div><details open><summary>Which languages does Yotes speak?</summary><p>English and Tamil today, including mixed Tamil and English. More languages will follow once native speakers have tested them.</p></details><details><summary>Do I need an account?</summary><p>No. Notes, reminders and Spaces work fully on your phone without one. Sign in only if you want backup, sync or family sharing.</p></details><details><summary>How do I delete my account?</summary><p>Open Settings, then Account, then Delete account. This removes your account and everything stored with it on our servers.</p></details><details><summary>Why aren't my reminders ringing?</summary><p>Check that notifications are allowed for Yotes in your phone's Settings, and that Focus or Do Not Disturb isn't silencing them.</p></details></div></div></div></main>
+<footer class="gut"><div class="wrap row"><a href="../../"><img src="../../assets/logo-white.png" alt="Thunder AI Labs" width="92" height="30"></a><span><a href="../support/">Support</a> · <a href="../privacy/">Privacy</a> · <a href="../../">Thunder AI Labs</a> · © 2026</span></div></footer>
+</body></html>
