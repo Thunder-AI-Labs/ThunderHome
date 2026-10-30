@@ -202,7 +202,11 @@ footer a:hover{color:var(--fg)}
   .ptext .logo{height:34px;margin-bottom:14px}
   .ptext p{margin:14px 0 18px}
   .ptext .meta{margin-bottom:16px}
-  .pvis{height:44vh}
+  .pvis{height:min(56vh,440px)}
+  /* phones: product scenes flow instead of pinning, so tall text never crops the demo */
+  .s-prod{height:auto}
+  .s-prod .stage{position:relative;height:auto;min-height:100svh}
+  .s-prod .pframe{height:auto;padding-bottom:72px}
   .phone{width:min(180px,44vw)}
   .browser{width:86vw}
   .sun{width:56vw}
@@ -573,4 +577,31 @@ if (reduce){
   const loop = now => { frame(now); tickMoments(now); drawZ(now); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
 }
+</script>
+<!-- phone menu: the link list folds into a Menu button under 860px -->
+<style>
+.nav .mbtn{display:none;align-items:center;justify-content:center;width:40px;height:38px;margin-left:auto;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:inherit;cursor:pointer;padding:0}
+.nav .mbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.nav .mbtn .x{display:none}.nav.open .mbtn .x{display:block}.nav.open .mbtn .m{display:none}
+@media (max-width:860px){
+  .nav .nbar{justify-content:flex-start;gap:10px}
+  .nav .mbtn{display:inline-flex}
+  .nav.open ul{display:flex;flex-direction:column;gap:2px;position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:calc(100% - 2px);margin:0;padding:8px;border-radius:16px;background:rgba(10,12,16,.92);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 20px 40px rgba(0,0,0,.4)}
+  .nav.open li a{padding:14px 16px;font-size:17px;color:#e8e9ee}
+}
+</style>
+<script>
+(() => {
+  const nav = document.querySelector('.nav'), cta = nav && nav.querySelector('.cta'), ul = nav && nav.querySelector('ul');
+  if (!nav || !ul) return;
+  ul.id = ul.id || 'navlinks';
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'mbtn'; b.setAttribute('aria-label', 'Menu'); b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', ul.id);
+  b.innerHTML = '<svg class="m" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  nav.querySelector('.nbar').insertBefore(b, cta || null);
+  const set = o => { nav.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o)); };
+  b.addEventListener('click', () => set(!nav.classList.contains('open')));
+  ul.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+})();
 </script>
